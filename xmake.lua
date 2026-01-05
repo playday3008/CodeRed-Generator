@@ -43,9 +43,10 @@ target("CodeRedGenerator")
     set_kind("shared")
     set_basename("CodeRedGenerator")
 
-    -- Static runtime linking for MinGW
+    -- Static runtime linking for GNU toolchains on Windows
     if is_plat("mingw") then
-        set_runtimes("stdc++_static")
+        set_runtimes("stdc_static", "stdc++_static")
+        add_shflags("-static", "-static-libgcc", "-static-libstdc++", {force = true})
     end
 
     -- Unicode support

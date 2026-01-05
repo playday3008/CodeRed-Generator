@@ -1,7 +1,8 @@
 #pragma once
 #include <windows.h>
-#include <inttypes.h>
-#include <stdint.h>
+#include <cinttypes>
+#include <cstdint>
+#include <cstring>
 #include <direct.h>
 #include <iostream>
 #include <sstream>

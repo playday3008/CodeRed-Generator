@@ -12,40 +12,28 @@ namespace Printer
 
     void FillRight(std::ostringstream& stream, char fill, uint32_t width)
     {
-        if (width > MAX_FILL_LENGTH)
-        {
-            width = MAX_FILL_LENGTH;
-        }
+        width = std::min(width, MAX_FILL_LENGTH);
 
         stream << std::setfill(fill) << std::setw(width) << std::right;
     }
 
     void FillLeft(std::ostringstream& stream, char fill, uint32_t width)
     {
-        if (width > MAX_FILL_LENGTH)
-        {
-            width = MAX_FILL_LENGTH;
-        }
+        width = std::min(width, MAX_FILL_LENGTH);
 
         stream << std::setfill(fill) << std::setw(width) << std::left;
     }
 
     void FillRight(std::ofstream& stream, char fill, uint32_t width)
     {
-        if (width > MAX_FILL_LENGTH)
-        {
-            width = MAX_FILL_LENGTH;
-        }
+        width = std::min(width, MAX_FILL_LENGTH);
 
         stream << std::setfill(fill) << std::setw(width) << std::right;
     }
 
     void FillLeft(std::ofstream& stream, char fill, uint32_t width)
     {
-        if (width > MAX_FILL_LENGTH)
-        {
-            width = MAX_FILL_LENGTH;
-        }
+        width = std::min(width, MAX_FILL_LENGTH);
 
         stream << std::setfill(fill) << std::setw(width) << std::left;
     }
