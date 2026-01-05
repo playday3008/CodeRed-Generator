@@ -1,0 +1,57 @@
+{
+    //#region Text Editor
+
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.rulers": [ 80, 120 ],
+
+    //#region Files
+
+    "files.associations": {
+        ".clangd": "yaml"
+    },
+
+    //#endregion Files
+
+    //#endregion Text Editor
+
+    //#region Language Specific
+
+    "[c]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
+    "[cpp]": {
+        "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+    },
+    "[markdown]": {
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[xmake]": {
+        "editor.defaultFormatter": "sumneko.lua"
+    },
+
+    //#endregion Language Specific
+
+    //#region C/C++
+
+    "C_Cpp.autocompleteAddParentheses": true,
+    "C_Cpp.default.cStandard": "c23",
+    "C_Cpp.default.cppStandard": "c++26",
+    "C_Cpp.intelliSenseEngine": "disabled", // Using clangd instead
+
+    //#endregion C/C++
+
+    //#region XMake
+
+    "xmake.compileCommandsDirectory": "${workspaceRoot}/build",
+
+    //#endregion XMake
+}

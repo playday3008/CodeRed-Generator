@@ -65,7 +65,6 @@ namespace Printer
     {
         if (!baseStr.empty() && !strToReplace.empty())
         {
-            size_t replaceLength = strToReplace.length();
             size_t replacePos = baseStr.find(strToReplace);
 
             while (replacePos != std::string::npos)

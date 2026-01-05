@@ -1,5 +1,5 @@
 #pragma once
-#include <Windows.h>
+#include <windows.h>
 #include <inttypes.h>
 #include <stdint.h>
 #include <direct.h>
@@ -12,6 +12,12 @@
 #include <filesystem>
 #include <vector>
 #include <map>
+#include <algorithm>
+#include <thread>
 
-#include <Psapi.h>
-#pragma comment(lib, "Psapi.lib")
+#include <psapi.h>
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#pragma comment(lib, "psapi.lib")
+#pragma GCC diagnostic pop

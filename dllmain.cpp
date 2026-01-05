@@ -883,7 +883,7 @@ std::pair<std::string, class UObject*> GCache::GetConstant(const UnrealObject& u
 
 UnrealObject GCache::GetLargestStruct(const std::string& structFullName)
 {
-    size_t propertySize = 0;
+    int32_t propertySize = 0;
     UnrealObject largestStruct;
 
     for (auto& classPair : m_structs)
@@ -3830,19 +3830,23 @@ namespace Generator
     }
 }
 
-void OnAttach(HMODULE hModule)
+DWORD OnAttach(HMODULE hModule)
 {
     DisableThreadLibraryCalls(hModule);
+    Utils::MessageboxInfo("Press OK to start SDK generation!");
     Generator::GenerateSDK();
     Generator::DumpInstances(true, true);
+
+    return 0;
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 {
-    switch (ul_reason_for_call)
+    (void)lpReserved;
+    switch (dwReason)
     {
     case DLL_PROCESS_ATTACH:
-        CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(OnAttach), nullptr, 0, nullptr);
+        CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(OnAttach), hModule, 0, nullptr);
         break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
