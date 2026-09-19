@@ -6,7 +6,7 @@
 #define STRINGIFY(x) STRINGIFY_IMPL(x)
 #define ENGINE_INCLUDE(file) STRINGIFY(ENGINE/file)
 
-// Engine files are included based on xmake's "engine" option (e.g., -DENGINE=BatmanAK)
+// Engine files are included based on build tool's "ENGINE" option (e.g., -DENGINE=Template), only "GameDefines.hpp" and "PiecesOfCode.hpp" is needed.
 #include ENGINE_INCLUDE(GameDefines.hpp)
 #include ENGINE_INCLUDE(PiecesOfCode.hpp)
 
