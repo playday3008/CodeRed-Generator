@@ -196,6 +196,11 @@ namespace Retrievers
 	uintptr_t GetBaseAddress();
 	uintptr_t GetOffset(void* pointer);
 	uintptr_t FindPattern(const uint8_t* pattern, const std::string& mask);
+
+	// Resolves a RIP-relative operand into the absolute address it points at.
+	// "instruction" is the address of the instruction, "operandOffset" is where its
+	// displacement starts within it, and "instructionSize" is the full instruction length.
+	uintptr_t ResolveRelative(uintptr_t instruction, size_t operandOffset, size_t instructionSize);
 }
 
 namespace ConstGenerator

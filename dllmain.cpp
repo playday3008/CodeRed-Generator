@@ -1358,6 +1358,17 @@ namespace Retrievers
 
         return NULL;
     }
+
+    uintptr_t ResolveRelative(uintptr_t instruction, size_t operandOffset, size_t instructionSize)
+    {
+        if (!instruction)
+        {
+            return NULL;
+        }
+
+        int32_t displacement = *reinterpret_cast<int32_t*>(instruction + operandOffset);
+        return (instruction + instructionSize + displacement);
+    }
 }
 
 namespace ConstGenerator
