@@ -3833,10 +3833,13 @@ namespace Generator
 DWORD OnAttach(HMODULE hModule)
 {
     DisableThreadLibraryCalls(hModule);
+    DebugActiveProcess(GetCurrentProcessId());
+
     Utils::MessageboxInfo("Press OK to start SDK generation!");
     Generator::GenerateSDK();
     Generator::DumpInstances(true, true);
 
+    FreeLibraryAndExitThread(hModule, 0);
     return 0;
 }
 
