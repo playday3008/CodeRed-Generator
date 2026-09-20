@@ -19,11 +19,22 @@ You have full customization over the final generated SDK, use enum classes, remo
 ### Requirements
 
 - ISO C++20 Standard.
-- Visual Studio or another Windows based compiler (For Windows header files, along with the PSAPI library).
+- CMake 3.21 or newer.
+- A compiler targeting Windows, for the Windows headers and the PSAPI library.
+  Visual Studio opens the project directly through its CMake support, and clang-cl can be used to build it from other platforms.
 
 ## Getting Started
 
-Included in this project is a template folder located in `Engine/Template`, to get started copy and paste this folder and rename it to the game you would like to use. To generate from your newly created engine folder don't forget to change the includes in the `Engine.hpp` file.
+Included in this project is a template folder located in `Engine/Template`, to get started copy and paste this folder and rename it to the game you would like to use. Every folder under `Engine` holding a `Configuration.cpp` is picked up automatically and built as its own DLL named after it, so a newly created folder needs no further wiring.
+
+Configure and build with a preset, for example:
+
+```
+cmake --preset windows-x64
+cmake --build --preset windows-x64-release
+```
+
+`cmake --list-presets` shows the rest. The resulting DLLs are written to `build/<preset>/bin/<config>`.
 
 In the `Configuration.hpp` file there are two defines, one is `NO_LOGGING` which disables writing to a log file, and another define called `UTF16`. If your game is using wide characters you will need to uncomment this define out, if not `UTF8` will be used by default.
 
@@ -43,7 +54,7 @@ Any class/struct member outside of whats in the `EMemberTypes` does NOT need to 
 
 ![](https://i.imgur.com/k9vawPv.png)
 
-Once all your classes are filled out and you've made the necessary changes in `Configuration.cpp`, double check you didn't forget to set an out path in `Configuration.cpp` and have the right files included in `Engine.hpp`. After that just compile as a DLL and manually inject into your game, generation will start automatically and will prompt you when it is completed.
+Once all your classes are filled out and you've made the necessary changes in `Configuration.cpp`, double check you didn't forget to set an out path in `Configuration.cpp`. After that just build and manually inject the DLL for your engine into your game, generation will start automatically and will prompt you when it is completed.
 
 ## Changelog
 
