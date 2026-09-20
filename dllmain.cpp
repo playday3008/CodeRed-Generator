@@ -883,7 +883,7 @@ std::pair<std::string, class UObject*> GCache::GetConstant(const UnrealObject& u
 
 UnrealObject GCache::GetLargestStruct(const std::string& structFullName)
 {
-    size_t propertySize = 0;
+    int32_t propertySize = 0;
     UnrealObject largestStruct;
 
     for (auto& classPair : m_structs)
