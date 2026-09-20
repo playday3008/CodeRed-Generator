@@ -3603,13 +3603,27 @@ namespace Generator
         {
             if (GConfig::UsingOffsets())
             {
-                GObjects = reinterpret_cast<TArray<UObject*>*>(Retrievers::GetBaseAddress() + GConfig::GetGObjectOffset());
+                GObjects = reinterpret_cast<GObjectsArray*>(Retrievers::GetBaseAddress() + GConfig::GetGObjectOffset());
                 GNames = reinterpret_cast<TArray<FNameEntry*>*>(Retrievers::GetBaseAddress() + GConfig::GetGNameOffset());
             }
             else
             {
-                GObjects = reinterpret_cast<TArray<UObject*>*>(Retrievers::FindPattern(GConfig::GetGObjectPattern(), GConfig::GetGObjectMask()));
-                GNames = reinterpret_cast<TArray<FNameEntry*>*>(Retrievers::FindPattern(GConfig::GetGNamePattern(), GConfig::GetGNameMask()));
+                // Both patterns match an instruction that reaches its global through a RIP
+                // relative operand, so the displacement has to be resolved to get the address.
+                uintptr_t gobjectInstruction = Retrievers::FindPattern(GConfig::GetGObjectPattern(), GConfig::GetGObjectMask());
+                uintptr_t gnameInstruction = Retrievers::FindPattern(GConfig::GetGNamePattern(), GConfig::GetGNameMask());
+
+                if (gobjectInstruction)
+                {
+                    // "lea rbp, GObjects" sits 18 bytes into the match and is 7 bytes long.
+                    GObjects = reinterpret_cast<GObjectsArray*>(Retrievers::ResolveRelative(gobjectInstruction + 18, 3, 7));
+                }
+
+                if (gnameInstruction)
+                {
+                    // "mov rcx, GNames" sits 9 bytes into the match and is 7 bytes long.
+                    GNames = reinterpret_cast<TArray<FNameEntry*>*>(Retrievers::ResolveRelative(gnameInstruction + 9, 3, 7));
+                }
             }
 
             if (AreGlobalsValid())
@@ -3620,7 +3634,9 @@ namespace Generator
                 // Structs
                 FNameEntry::Register_HashNext();
                 FNameEntry::Register_Index();
-                FNameEntry::Register_Flags();
+#ifndef FNAMEENTRY_FLAGS_IN_INDEX
+                FNameEntry::Register_Flags(); // Not needed if the flags are packed into the index, define "FNAMEENTRY_FLAGS_IN_INDEX" in your "GameDefines.hpp" file!
+#endif
                 FNameEntry::Register_Name();
 
                 // Objects
@@ -3808,6 +3824,7 @@ namespace Generator
     {
         if (GObjects
             && !UObject::GObjObjects()->empty()
+            && (UObject::GObjObjects()->size() <= GObjectsArray::MaxElements)
             && (UObject::GObjObjects()->capacity() > UObject::GObjObjects()->size()))
         {
             return true;

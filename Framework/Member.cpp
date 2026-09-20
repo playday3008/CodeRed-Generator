@@ -65,8 +65,10 @@ std::string Member::GetLabel(EMemberTypes type)
 		return "class FNameEntry* HashNext;";
 	case EMemberTypes::FNameEntry_Index:
 		return "int32_t Index;";
+#ifndef FNAMEENTRY_FLAGS_IN_INDEX
 	case EMemberTypes::FNameEntry_Flags:
 		return "uint64_t Flags;";
+#endif
 	case EMemberTypes::FNameEntry_Name:
 #ifdef UTF16
 		return "wchar_t Name[0x400];";
@@ -142,8 +144,10 @@ uintptr_t Member::GetOffset(EMemberTypes type)
 		return offsetof(FNameEntry, HashNext);
 	case EMemberTypes::FNameEntry_Index:
 		return offsetof(FNameEntry, Index);
+#ifndef FNAMEENTRY_FLAGS_IN_INDEX
 	case EMemberTypes::FNameEntry_Flags:
 		return offsetof(FNameEntry, Flags);
+#endif
 	case EMemberTypes::FNameEntry_Name:
 		return offsetof(FNameEntry, Name);
 	case EMemberTypes::UObject_VfTable:
@@ -327,7 +331,9 @@ std::map<EClassTypes, std::vector<EMemberTypes>> Member::m_classMembers = {
 	{ EClassTypes::FNameEntry, {
 		EMemberTypes::FNameEntry_HashNext,
 		EMemberTypes::FNameEntry_Index,
+#ifndef FNAMEENTRY_FLAGS_IN_INDEX
 		EMemberTypes::FNameEntry_Flags,
+#endif
 		EMemberTypes::FNameEntry_Name
 	} },
 

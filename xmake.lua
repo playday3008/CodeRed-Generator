@@ -89,6 +89,12 @@ target("CodeRedGenerator")
             "Engine/" .. engine .. "/GameDefines.cpp",
             "Engine/" .. engine .. "/PiecesOfCode.cpp"
         )
+
+        -- Static assertions over the engine's class layout, built only where present.
+        local layoutCheck = "Engine/" .. engine .. "/LayoutCheck.cpp"
+        if os.isfile(path.join(os.projectdir(), layoutCheck)) then
+            target:add("files", layoutCheck)
+        end
         target:add("headerfiles",
             "Engine/" .. engine .. "/Configuration.hpp",
             "Engine/" .. engine .. "/GameDefines.hpp",
