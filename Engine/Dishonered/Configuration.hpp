@@ -24,7 +24,7 @@ class GConfig
 {
 private: // Cosmetics
 	static uint32_t m_constantSpacing;
-	static uint32_t m_commentSpacing; 
+	static uint32_t m_commentSpacing;
 	static uint32_t m_enumSpacing;
 	static uint32_t m_classSpacing;
 	static uint32_t m_structSpacing;

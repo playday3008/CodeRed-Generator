@@ -410,7 +410,7 @@ namespace PiecesOfCode
 		"\t}\n"
 		"};\n";
 
-	const std::string FNameEntry_Struct = 
+	const std::string FNameEntry_Struct =
 		"class FNameEntry\n"
 		"{\n"
 		"public:";
