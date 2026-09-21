@@ -1770,7 +1770,7 @@ namespace StructGenerator
 				{
 					if (unrealProp.IsValid())
 					{
-						if (lastOffset < unrealProp.Property->Offset)
+						if (lastOffset < static_cast<size_t>(unrealProp.Property->Offset))
 						{
 							missedOffset = (unrealProp.Property->Offset - lastOffset);
 
@@ -1827,7 +1827,7 @@ namespace StructGenerator
 						{
 							size_t interfaceSize = unrealProp.GetSize();
 
-							if (offsetError == interfaceSize)
+							if (offsetError == static_cast<int32_t>(interfaceSize))
 							{
 								offsetError -= interfaceSize;
 							}
@@ -1956,7 +1956,7 @@ namespace StructGenerator
 					}
 				}
 
-				if (lastOffset < scriptStruct->PropertySize)
+				if (lastOffset < static_cast<size_t>(scriptStruct->PropertySize))
 				{
 					missedOffset = (scriptStruct->PropertySize - lastOffset);
 
@@ -1981,14 +1981,10 @@ namespace StructGenerator
 #ifndef SKIP_MIN_ALIGNMENT
 				if (scriptStruct->MinAlignment)
 				{
-					int32_t actualSize = 0;
+					// Round the struct size up to the next MinAlignment multiple.
+					const int32_t actualSize = (((scriptStruct->PropertySize + scriptStruct->MinAlignment - 1) / scriptStruct->MinAlignment) * scriptStruct->MinAlignment);
 
-					for (int32_t i = 0; actualSize < scriptStruct->PropertySize; i++)
-					{
-						actualSize += scriptStruct->MinAlignment;
-					}
-
-					if ((lastOffset < actualSize) && (actualSize > scriptStruct->PropertySize))
+					if ((lastOffset < static_cast<size_t>(actualSize)) && (actualSize > scriptStruct->PropertySize))
 					{
 						int32_t padding = (actualSize - lastOffset);
 						std::string missedStr = Printer::Hex(padding);
@@ -2117,7 +2113,7 @@ namespace ClassGenerator
 
 			if (!members.empty())
 			{
-				if (uClass->PropertySize == localSize)
+				if (uClass->PropertySize == static_cast<int32_t>(localSize))
 				{
 					lastOffset = startOffset;
 					uint32_t unknownDataIndex = 0;
@@ -2147,7 +2143,7 @@ namespace ClassGenerator
 						lastOffset = (memberPair.second->Offset + memberPair.second->Size);
 					}
 
-					if (lastOffset < uClass->PropertySize)
+					if (lastOffset < static_cast<size_t>(uClass->PropertySize))
 					{
 						missedOffset = (uClass->PropertySize - lastOffset);
 
@@ -2288,7 +2284,7 @@ namespace ClassGenerator
 								}
 							}
 
-							if (lastOffset < unrealProp.Property->Offset)
+							if (lastOffset < static_cast<size_t>(unrealProp.Property->Offset))
 							{
 								missedOffset = (unrealProp.Property->Offset - lastOffset);
 
@@ -2345,7 +2341,7 @@ namespace ClassGenerator
 							{
 								size_t interfaceSize = unrealProp.GetSize();
 
-								if (offsetError == interfaceSize)
+								if (offsetError == static_cast<int32_t>(interfaceSize))
 								{
 									offsetError -= interfaceSize;
 								}
@@ -2475,7 +2471,7 @@ namespace ClassGenerator
 						}
 					}
 
-					if (lastOffset < uClass->PropertySize)
+					if (lastOffset < static_cast<size_t>(uClass->PropertySize))
 					{
 						missedOffset = (uClass->PropertySize - lastOffset);
 
