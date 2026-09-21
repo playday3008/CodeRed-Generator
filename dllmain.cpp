@@ -3414,22 +3414,23 @@ namespace Generator
 		Printer::Header(definesFile, "GameDefines", "hpp", false);
 
 		definesFile << "#pragma once\n";
+		definesFile << "\n";
+		definesFile << "#include <cctype>\n";
+		definesFile << "#include <cstdlib>\n";
+		definesFile << "\n";
+		definesFile << "#include <algorithm>\n";
+		definesFile << "#include <chrono>\n";
+		definesFile << "#include <locale>\n";
+		definesFile << "#include <map>\n";
+		definesFile << "#include <string>\n";
+		definesFile << "#include <thread>\n";
+		definesFile << "#include <vector>\n";
 
 		if (GConfig::UsingWindows())
 		{
-			definesFile << "#include <windows.h>\n";
+			definesFile << "\n";
+			definesFile << "#include <Windows.h>\n";
 		}
-
-		definesFile << "#include <algorithm>\n";
-		definesFile << "#include <locale>\n";
-		definesFile << "#include <stdlib.h>\n";
-		definesFile << "#include <xlocale>\n";
-		definesFile << "#include <ctype.h>\n";
-		definesFile << "#include <chrono>\n";
-		definesFile << "#include <thread>\n";
-		definesFile << "#include <vector>\n";
-		definesFile << "#include <string>\n";
-		definesFile << "#include <map>\n";
 
 		if (GConfig::PrintEnumFlags())
 		{
@@ -3442,24 +3443,24 @@ namespace Generator
 		if (GConfig::UsingOffsets())
 		{
 			definesFile << "// GObjects\n";
-			definesFile << "#define GObjects_Offset\t\t(uintptr_t)" << Printer::Hex(GConfig::GetGObjectOffset(), sizeof(uintptr_t)) << "\n";
+			definesFile << "#define GObjects_Offset (uintptr_t)" << Printer::Hex(GConfig::GetGObjectOffset(), sizeof(uintptr_t)) << "\n";
 
 			definesFile << "// GNames\n";
-			definesFile << "#define GNames_Offset\t\t(uintptr_t)" << Printer::Hex(GConfig::GetGNameOffset(), sizeof(uintptr_t)) << "\n";
+			definesFile << "#define GNames_Offset (uintptr_t)" << Printer::Hex(GConfig::GetGNameOffset(), sizeof(uintptr_t)) << "\n";
 		}
 		else
 		{
 			definesFile << "// GObjects\n";
-			definesFile << "#define GObjects_Pattern\t\t(const uint8_t*)\"" << GConfig::GetGObjectStr() + "\"\n";
-			definesFile << "#define GObjects_Mask\t\t\t(const char*)\"" << GConfig::GetGObjectMask() + "\"\n";
+			definesFile << "#define GObjects_Pattern (const uint8_t*)\"" << GConfig::GetGObjectStr() + "\"\n";
+			definesFile << "#define GObjects_Mask (const char*)\"" << GConfig::GetGObjectMask() + "\"\n";
 
 			definesFile << "// GNames\n";
-			definesFile << "#define GNames_Pattern\t\t\t(const uint8_t*)\"" << GConfig::GetGNameStr() + "\"\n";
-			definesFile << "#define GNames_Mask\t\t\t\t(const char*)\"" << GConfig::GetGNameMask() + "\"\n";
+			definesFile << "#define GNames_Pattern (const uint8_t*)\"" << GConfig::GetGNameStr() + "\"\n";
+			definesFile << "#define GNames_Mask (const char*)\"" << GConfig::GetGNameMask() + "\"\n";
 
 			definesFile << "// Process Event\n";
-			definesFile << "#define ProcessEvent_Pattern\t(const uint8_t*)\"" << GConfig::GetProcessEventStr() << "\"\n";
-			definesFile << "#define ProcessEvent_Mask\t\t(const char*)\"" << GConfig::GetProcessEventMask() << "\"\n";
+			definesFile << "#define ProcessEvent_Pattern (const uint8_t*)\"" << GConfig::GetProcessEventStr() << "\"\n";
+			definesFile << "#define ProcessEvent_Mask (const char*)\"" << GConfig::GetProcessEventMask() << "\"\n";
 		}
 
 		Printer::Section(definesFile, "Classes");
