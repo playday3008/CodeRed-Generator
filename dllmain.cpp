@@ -3866,19 +3866,29 @@ namespace Generator
 	}
 }
 
-void OnAttach(HMODULE hModule)
+DWORD WINAPI OnAttach(LPVOID lpParameter)
 {
+	HMODULE hModule = static_cast<HMODULE>(lpParameter);
+
 	DisableThreadLibraryCalls(hModule);
+
+	Utils::MessageboxInfo("Press OK to start SDK generation!");
 	Generator::GenerateSDK();
 	Generator::DumpInstances(true, true);
+
+	FreeLibraryAndExitThread(hModule, 0);
+
+	return ERROR_SUCCESS;
 }
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD dwReason, LPVOID lpReserved)
 {
-	switch (ul_reason_for_call)
+	(void)lpReserved;
+
+	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(OnAttach), nullptr, 0, nullptr);
+		CreateThread(nullptr, 0, OnAttach, hModule, 0, nullptr);
 		break;
 	case DLL_THREAD_ATTACH:
 	case DLL_THREAD_DETACH:
