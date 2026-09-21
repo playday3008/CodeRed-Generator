@@ -3455,7 +3455,7 @@ namespace Generator
 
 			definesFile << "// GNames\n";
 			definesFile << "#define GNames_Pattern\t\t\t(const uint8_t*)\"" << GConfig::GetGNameStr() + "\"\n";
-			definesFile << "#define GNames_Mask\t\t\t\t(const char*)\"" << GConfig::GetGNameStr() + "\"\n";
+			definesFile << "#define GNames_Mask\t\t\t\t(const char*)\"" << GConfig::GetGNameMask() + "\"\n";
 
 			definesFile << "// Process Event\n";
 			definesFile << "#define ProcessEvent_Pattern\t(const uint8_t*)\"" << GConfig::GetProcessEventStr() << "\"\n";
