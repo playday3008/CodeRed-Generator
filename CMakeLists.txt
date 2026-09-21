@@ -21,12 +21,15 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 option(CODERED_WERROR "Treat warnings as errors" OFF)
 
+# clang-cl reads "-Wall" as "-Weverything", and only the frontend variant tells the two clang drivers apart.
+set(CODERED_MSVC_FRONTEND $<OR:$<CXX_COMPILER_ID:MSVC>,$<STREQUAL:${CMAKE_CXX_COMPILER_FRONTEND_VARIANT},MSVC>>)
+
 set(SHARED_COMPILE_OPTIONS
-    $<$<CXX_COMPILER_ID:MSVC>:
+    $<${CODERED_MSVC_FRONTEND}:
         /W4
         $<$<BOOL:${CODERED_WERROR}>:/WX>
     >
-    $<$<CXX_COMPILER_ID:Clang,AppleClang,GNU>:
+    $<$<AND:$<CXX_COMPILER_ID:Clang,AppleClang,GNU>,$<NOT:${CODERED_MSVC_FRONTEND}>>:
         -Wall -Wextra -Wpedantic
         $<$<BOOL:${CODERED_WERROR}>:-Werror>
     >
