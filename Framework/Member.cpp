@@ -134,6 +134,11 @@ std::string Member::GetLabel(EMemberTypes type)
 	}
 }
 
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Winvalid-offsetof"
+#endif
+
 uintptr_t Member::GetOffset(EMemberTypes type)
 {
 	switch (type)
@@ -210,6 +215,10 @@ uintptr_t Member::GetOffset(EMemberTypes type)
 		return 0;
 	}
 }
+
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 size_t Member::GetClassSize(EClassTypes type)
 {
