@@ -226,7 +226,7 @@ size_t Member::GetClassSize(EClassTypes type)
 	case EClassTypes::UConst:
 		return sizeof(UConst);
 	case EClassTypes::UProperty:
-		return  sizeof(UProperty);
+		return sizeof(UProperty);
 	case EClassTypes::UStruct:
 		return sizeof(UStruct);
 	case EClassTypes::UFunction:
@@ -322,6 +322,8 @@ void Member::AddRegistered(std::map<size_t, Member*>& members, EMemberTypes type
 }
 
 std::map<EClassTypes, std::vector<EMemberTypes>> Member::m_classMembers = {
+	// clang-format off
+
 	// Core Objects
 
 	{ EClassTypes::FNameEntry, {
@@ -405,6 +407,8 @@ std::map<EClassTypes, std::vector<EMemberTypes>> Member::m_classMembers = {
 	{ EClassTypes::UArrayProperty, {
 		EMemberTypes::UArrayProperty_Inner
 	} },
+
+	// clang-format on
 };
 
 Member& Member::operator=(const Member& member)

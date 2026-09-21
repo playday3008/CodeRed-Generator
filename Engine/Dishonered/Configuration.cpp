@@ -1,4 +1,5 @@
 #include "Configuration.hpp"
+
 #include "PiecesOfCode.hpp"
 
 /*

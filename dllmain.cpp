@@ -63,7 +63,6 @@ UnrealObject::UnrealObject(const UnrealObject& unrealObj) :
 	FullName(unrealObj.FullName),
 	ValidName(unrealObj.ValidName)
 {
-
 }
 
 UnrealObject::~UnrealObject() {}
@@ -262,12 +261,14 @@ bool UnrealProperty::IsContainer() const
 {
 	if (IsValid())
 	{
+		// clang-format off
 		return ((Type == EPropertyTypes::FName)
 			|| (Type == EPropertyTypes::FString)
 			|| (Type == EPropertyTypes::FScriptDelegate)
 			|| (Type == EPropertyTypes::FStruct)
 			|| (Type == EPropertyTypes::TArray)
 			|| (Type == EPropertyTypes::TMap));
+		// clang-format on
 	}
 
 	return false;
@@ -327,6 +328,7 @@ bool UnrealProperty::CantConst() const
 {
 	if (IsValid())
 	{
+		// clang-format off
 		return (IsReturnParameter()
 			|| IsOutParameter()
 			|| ((Type != EPropertyTypes::FName)
@@ -335,6 +337,7 @@ bool UnrealProperty::CantConst() const
 				&& (Type != EPropertyTypes::FStruct)
 				&& (Type != EPropertyTypes::TArray)
 				&& (Type != EPropertyTypes::TMap)));
+		// clang-format on
 	}
 
 	return false;
@@ -354,6 +357,7 @@ bool UnrealProperty::ShouldMemcpy() const
 {
 	if (IsValid())
 	{
+		// clang-format off
 		return (IsAnArray()
 			|| (Type == EPropertyTypes::FName)
 			|| (Type == EPropertyTypes::FString)
@@ -361,6 +365,7 @@ bool UnrealProperty::ShouldMemcpy() const
 			|| (Type == EPropertyTypes::FStruct)
 			|| (Type == EPropertyTypes::TArray)
 			|| (Type == EPropertyTypes::TMap));
+		// clang-format on
 	}
 
 	return false;
@@ -1118,9 +1123,11 @@ namespace Utils
 	{
 		if (unrealPropA.Property && unrealPropB.Property)
 		{
+			// clang-format off
 			if ((unrealPropA.Property->Offset == unrealPropB.Property->Offset)
 				&& (unrealPropA.Type == EPropertyTypes::Bool)
 				&& (unrealPropB.Type == EPropertyTypes::Bool))
+			// clang-format on
 			{
 				return (static_cast<UBoolProperty*>(unrealPropA.Property)->BitMask < static_cast<UBoolProperty*>(unrealPropB.Property)->BitMask);
 			}
@@ -1143,6 +1150,7 @@ namespace Retrievers
 	{
 		bool first = true;
 
+		// clang-format off
 		if (functionFlags & EFunctionFlags::FUNC_Final) { stream << (first ? "(" : " | ") << "FUNC_Final";						                first = false; }
 		if (functionFlags & EFunctionFlags::FUNC_Defined) { stream << (first ? "(" : " | ") << "FUNC_Defined";						            first = false; }
 		if (functionFlags & EFunctionFlags::FUNC_Iterator) { stream << (first ? "(" : " | ") << "FUNC_Iterator";						        first = false; }
@@ -1176,6 +1184,7 @@ namespace Retrievers
 		if (functionFlags & EFunctionFlags::FUNC_Lambda) { stream << (first ? "(" : " | ") << "FUNC_Lambda";						            first = false; }
 		if (functionFlags & EFunctionFlags::FUNC_NetValidate) { stream << (first ? "(" : " | ") << "FUNC_NetValidate";						    first = false; }
 		if (functionFlags & EFunctionFlags::FUNC_AllFlags) { stream << (first ? "(" : " | ") << "FUNC_AllFlags";						        first = false; }
+		// clang-format on
 
 		if (!first)
 		{
@@ -1187,6 +1196,7 @@ namespace Retrievers
 	{
 		bool first = true;
 
+		// clang-format off
 		if (propertyFlags & EPropertyFlags::CPF_Edit) { stream << (first ? "(" : " | ") << "CPF_Edit";							                first = false; }
 		if (propertyFlags & EPropertyFlags::CPF_Const) { stream << (first ? "(" : " | ") << "CPF_Const";						                first = false; }
 		if (propertyFlags & EPropertyFlags::CPF_Input) { stream << (first ? "(" : " | ") << "CPF_Input";						                first = false; }
@@ -1230,6 +1240,7 @@ namespace Retrievers
 		if (propertyFlags & EPropertyFlags::CPF_EditTextBox) { stream << (first ? "(" : " | ") << "CPF_EditTextBox";	                        first = false; }
 		if (propertyFlags & EPropertyFlags::CPF_CrossLevelPassive) { stream << (first ? "(" : " | ") << "CPF_CrossLevelPassive";	            first = false; }
 		if (propertyFlags & EPropertyFlags::CPF_CrossLevelActive) { stream << (first ? "(" : " | ") << "CPF_CrossLevelActive";	                first = false; }
+		// clang-format on
 
 		if (!first)
 		{
@@ -1241,6 +1252,7 @@ namespace Retrievers
 	{
 		bool first = true;
 
+		// clang-format off
 		if (objectFlags & EObjectFlags::RF_InSingularFunc) { stream << (first ? "(" : " | ") << "RF_InSingularFunc";						    first = false; }
 		if (objectFlags & EObjectFlags::RF_StateChanged) { stream << (first ? "(" : " | ") << "RF_StateChanged";						        first = false; }
 		if (objectFlags & EObjectFlags::RF_DebugPostLoad) { stream << (first ? "(" : " | ") << "RF_DebugPostLoad";						        first = false; }
@@ -1296,6 +1308,7 @@ namespace Retrievers
 		if (objectFlags & EObjectFlags::RF_MarkedByCookerTemp) { stream << (first ? "(" : " | ") << "RF_MarkedByCookerTemp";					first = false; }
 		if (objectFlags & EObjectFlags::RF_CookedStartupObject) { stream << (first ? "(" : " | ") << "RF_CookedStartupObject";					first = false; }
 		if (objectFlags & EObjectFlags::RF_AllFlags) { stream << (first ? "(" : " | ") << "RF_AllFlags";						                first = false; }
+		// clang-format on
 
 		if (!first)
 		{
@@ -2199,6 +2212,7 @@ namespace ClassGenerator
 
 				for (UProperty* uProperty = static_cast<UProperty*>(uClass->Children); uProperty; uProperty = static_cast<UProperty*>(uProperty->Next))
 				{
+					// clang-format off
 					if (uProperty
 						&& (uProperty->ElementSize > 0)
 						&& !uProperty->IsA<UFunction>()
@@ -2206,6 +2220,7 @@ namespace ClassGenerator
 						&& !uProperty->IsA<UEnum>()
 						&& !uProperty->IsA<UScriptStruct>()
 						&& (!uSuperClass || (uSuperClass && (uSuperClass != uClass) && (uProperty->Offset >= uSuperClass->PropertySize))))
+					// clang-format on
 					{
 						UnrealProperty unrealProp(uProperty);
 
@@ -2223,10 +2238,11 @@ namespace ClassGenerator
 					size = (uClass->PropertySize - uSuperClass->PropertySize);
 					lastOffset = uSuperClass->PropertySize;
 
-					classStream << "// " << Printer::Hex(size, EWidthTypes::Size);
-					classStream << " (" << Printer::Hex(uSuperClass->PropertySize, EWidthTypes::Size);
-					classStream << " - " << Printer::Hex(uClass->PropertySize, EWidthTypes::Size);
-					classStream << ")\n" << "class " << classNameCPP << " : public " << UnrealObject::CreateValidName(uSuperClass->GetNameCPP());
+					classStream << "// " << Printer::Hex(size, EWidthTypes::Size)
+								<< " (" << Printer::Hex(uSuperClass->PropertySize, EWidthTypes::Size)
+								<< " - " << Printer::Hex(uClass->PropertySize, EWidthTypes::Size)
+								<< ")\n"
+								<< "class " << classNameCPP << " : public " << UnrealObject::CreateValidName(uSuperClass->GetNameCPP());
 				}
 				else
 				{
@@ -2238,6 +2254,7 @@ namespace ClassGenerator
 
 				classStream << "\n{\npublic:\n";
 
+				// clang-format off
 				if (uClass == UField::StaticClass()) { GenerateClassMembers(classStream, uClass, EClassTypes::UField); }
 				else if (uClass == UEnum::StaticClass()) { GenerateClassMembers(classStream, uClass, EClassTypes::UEnum); }
 				else if (uClass == UConst::StaticClass()) { GenerateClassMembers(classStream, uClass, EClassTypes::UConst); }
@@ -2252,6 +2269,7 @@ namespace ClassGenerator
 				else if (uClass == UByteProperty::StaticClass()) { GenerateClassMembers(classStream, uClass, EClassTypes::UByteProperty); }
 				else if (uClass == UBoolProperty::StaticClass()) { GenerateClassMembers(classStream, uClass, EClassTypes::UBoolProperty); }
 				else if (uClass == UArrayProperty::StaticClass()) { GenerateClassMembers(classStream, uClass, EClassTypes::UArrayProperty); }
+				// clang-format on
 				else
 				{
 					std::map<std::string, uint32_t> propertyNameMap;
@@ -2611,11 +2629,15 @@ namespace ParameterGenerator
 					parameterStream << " (iNative[" << uFunction->iNative << "])";
 				}
 
+				// clang-format off
 				if (uFunction->FunctionFlags & EFunctionFlags::FUNC_Exec) { propertyStream << "exec"; }
 				else if (uFunction->FunctionFlags & EFunctionFlags::FUNC_Event) { propertyStream << "event"; }
 				else { propertyStream << "exec"; }
+				// clang-format on
 
-				parameterStream << "\nstruct " << classNameCPP << "_" << propertyStream.str() << functionObj.ValidName << "_Params\n" << "{\n";
+				parameterStream << "\n"
+								<< "struct " << classNameCPP << "_" << propertyStream.str() << functionObj.ValidName << "_Params\n"
+								<< "{\n";
 				Printer::Empty(propertyStream);
 
 				std::vector<UnrealProperty> funcProperties;
@@ -2933,16 +2955,20 @@ namespace FunctionGenerator
 
 					if (returnParam.first.IsValid())
 					{
-						codeStream << "\n" << returnParam.first.GetTypeForClass();
+						codeStream << "\n"
+								   << returnParam.first.GetTypeForClass();
 					}
 					else
 					{
-						codeStream << "\nvoid";
+						codeStream << "\n"
+								   << "void";
 					}
 
+					// clang-format off
 					if (uFunction->FunctionFlags & EFunctionFlags::FUNC_Exec) { codeStream << " " << classNameCPP << "::" << functionObj.ValidName << "("; }
 					else if (uFunction->FunctionFlags & EFunctionFlags::FUNC_Event) { codeStream << " " << classNameCPP << "::event" << functionObj.ValidName << "("; }
 					else { codeStream << " " << classNameCPP << "::" << functionObj.ValidName << "("; }
+					// clang-format on
 
 					bool printComma = false;
 
@@ -3006,9 +3032,11 @@ namespace FunctionGenerator
 					codeStream << "\t}\n\n";
 					codeStream << "\t" << classNameCPP << "_";
 
+					// clang-format off
 					if (uFunction->FunctionFlags & EFunctionFlags::FUNC_Exec) { codeStream << "exec"; }
 					else if (uFunction->FunctionFlags & EFunctionFlags::FUNC_Event) { codeStream << "event"; }
 					else { codeStream << "exec"; }
+					// clang-format on
 
 					codeStream << functionObj.ValidName << "_Params " << functionObj.ValidName << "_Params;\n";
 					codeStream << "\tmemset(&" << functionObj.ValidName << "_Params, 0, sizeof(" << functionObj.ValidName << "_Params));\n";
@@ -3252,9 +3280,11 @@ namespace FunctionGenerator
 						functionStream << "void";
 					}
 
+					// clang-format off
 					if (uFunction->FunctionFlags & EFunctionFlags::FUNC_Exec) { functionStream << " " << functionObj.ValidName << "("; }
 					else if (uFunction->FunctionFlags & EFunctionFlags::FUNC_Event) { functionStream << " event" << functionObj.ValidName << "("; }
 					else { functionStream << " " << functionObj.ValidName << "("; }
+					// clang-format on
 
 					bool printComma = false;
 
@@ -3710,15 +3740,16 @@ namespace Generator
 		if (Initialize(false) && AreGlobalsValid())
 		{
 			std::filesystem::path fullDirectory = (GConfig::GetOutputPath() / GConfig::GetGameNameShort());
-			std::filesystem::create_directory(GConfig::GetOutputPath());            
+			std::filesystem::create_directory(GConfig::GetOutputPath());
 			std::filesystem::create_directory(fullDirectory);
 
 			if (std::filesystem::exists(fullDirectory))
 			{
 				std::ofstream file(fullDirectory / "NameDump.txt");
-				file << "Base: " << Printer::Hex(Retrievers::GetBaseAddress(), sizeof(uintptr_t)) << "\n";
-				file << "GNames: " << Printer::Hex(GNames) << "\n";
-				file << "Offset: " << Printer::Hex(Retrievers::GetOffset(GNames), sizeof(uintptr_t)) << "\n" << std::endl;
+				file << "Base: " << Printer::Hex(Retrievers::GetBaseAddress(), sizeof(uintptr_t)) << "\n"
+					 << "GNames: " << Printer::Hex(GNames) << "\n"
+					 << "Offset: " << Printer::Hex(Retrievers::GetOffset(GNames), sizeof(uintptr_t)) << "\n"
+					 << std::endl;
 
 				for (int32_t i = 0; i < FName::Names()->size(); i++)
 				{
@@ -3760,9 +3791,10 @@ namespace Generator
 			if (std::filesystem::exists(fullDirectory))
 			{
 				std::ofstream file(fullDirectory / "ObjectDump.txt");
-				file << "Base: " << Printer::Hex(Retrievers::GetBaseAddress(), sizeof(uintptr_t)) << "\n";
-				file << "GObjects: " << Printer::Hex(GObjects) << "\n";
-				file << "Offset: " << Printer::Hex(Retrievers::GetOffset(GObjects), sizeof(uintptr_t)) << "\n" << std::endl;
+				file << "Base: " << Printer::Hex(Retrievers::GetBaseAddress(), sizeof(uintptr_t)) << "\n"
+					 << "GObjects: " << Printer::Hex(GObjects) << "\n"
+					 << "Offset: " << Printer::Hex(Retrievers::GetOffset(GObjects), sizeof(uintptr_t)) << "\n"
+					 << std::endl;
 
 				for (int32_t i = 0; i < (UObject::GObjObjects()->size() - 1); i++)
 				{
@@ -3795,9 +3827,11 @@ namespace Generator
 
 	bool AreGObjectsValid()
 	{
+		// clang-format off
 		if (GObjects
 			&& !UObject::GObjObjects()->empty()
 			&& (UObject::GObjObjects()->capacity() > UObject::GObjObjects()->size()))
+		// clang-format on
 		{
 			return true;
 		}
@@ -3807,9 +3841,11 @@ namespace Generator
 
 	bool AreGNamesValid()
 	{
+		// clang-format off
 		if (GNames
 			&& !FName::Names()->empty()
 			&& (FName::Names()->capacity() > FName::Names()->size()))
+		// clang-format on
 		{
 			return true;
 		}

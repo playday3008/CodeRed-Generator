@@ -1,4 +1,5 @@
 #include "Printer.hpp"
+
 #include "../Engine/Engine.hpp"
 
 namespace Printer
