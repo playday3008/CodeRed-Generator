@@ -116,7 +116,7 @@ public:                                             // Global Utils
 	static size_t GetClassOffset(EClassTypes type); // Returns the start offset of the given type, taking into account its inherited classes.
 
 public:
-	static void Register(EMemberTypes type, size_t size);             // This should only be called by the "REGISTER_MEMBER" macro!
+	static void Register(EMemberTypes type, size_t size);             // This should only be called by the "DECLARE_MEMBER(_ARRAY)" macro!
 	static std::map<size_t, Member*> GetRegistered(EClassTypes type); // Returns registered members for the given class type, sorted by their offsets.
 
 private:
@@ -128,8 +128,16 @@ public:
 	Member& operator=(const Member& member);
 };
 
-#define REGISTER_MEMBER(memberVariable, memberName, memberType) \
-	static void Register_##memberName() { Member::Register(memberType, sizeof(memberVariable)); }
+#define REGISTER_MEMBER(Type, Name, Kind) \
+	static void Register_##Name() { Member::Register(Kind, sizeof(Type)); }
+
+#define DECLARE_MEMBER(Type, Name, Kind) \
+	Type Name;                           \
+	REGISTER_MEMBER(Type, Name, Kind)
+
+#define DECLARE_MEMBER_ARRAY(Type, Name, Count, Kind) \
+	Type Name[Count];                                 \
+	REGISTER_MEMBER(Type, Name, Kind)
 
 /*
 # ========================================================================================= #

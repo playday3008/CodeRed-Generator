@@ -3633,7 +3633,7 @@ namespace Generator
 
 			if (AreGlobalsValid())
 			{
-				// Here is where that "REGISTER_MEMBER" macro is used, these functions calculate offsets for each class member.
+				// Here is where that "DECLARE_MEMBER(_ARRAY)" macro is used, these functions calculate offsets for each class member.
 				// There might be a better and automated way of doing this, so maybe I'll change this in the future when I'm less lazy.
 
 				// Structs

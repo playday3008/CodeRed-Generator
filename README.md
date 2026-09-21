@@ -48,9 +48,9 @@ Any further configuration **MUST BE DONE IN THE `Configuration.cpp` ONLY!** This
 
 ## Generation
 
-Once you have your custom engine folder setup, all that's left is to fill out your class and struct fields for your game. This generator uses a unique `REGISTER_MEMBER` macro to define class/struct members. This is very important for your final generated SDK as it's used to calculate offsets and unknown data all automatically, without needing to modify your `PiecesOfCode.cpp` unlike in Feckless's generator.
+Once you have your custom engine folder setup, all that's left is to fill out your class and struct fields for your game. This generator uses a unique `DECLARE_MEMBER` macro to declare class/struct members (`DECLARE_MEMBER_ARRAY` for arrays, which takes the element count). This is very important for your final generated SDK as it's used to calculate offsets and unknown data all automatically, without needing to modify your `PiecesOfCode.cpp` unlike in Feckless's generator.
 
-Any class/struct member outside of whats in the `EMemberTypes` does NOT need to be registered with the `REGISTER_MEMBER` macro, so feel free to place padding or buffers in between.
+Any class/struct member outside of whats in the `EMemberTypes` does NOT need to be registered with the `DECLARE_MEMBER` macro, so feel free to place padding or buffers in between.
 
 ![](https://i.imgur.com/k9vawPv.png)
 
