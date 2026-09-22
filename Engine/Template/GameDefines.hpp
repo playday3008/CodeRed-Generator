@@ -1091,7 +1091,7 @@ public:
 class FString
 {
 public:
-#ifdef UTF16
+#ifdef UTF16_FSTRING
 	using ElementType = const wchar_t;
 #else
 	using ElementType = const char;
@@ -1111,7 +1111,7 @@ public:
 	~FString() {}
 
 public:
-#ifdef UTF16
+#ifdef UTF16_FSTRING
 	FString& assign(ElementPointer other)
 	{
 		ArrayCount = (other ? (wcslen(other) + 1) : 0);
@@ -1198,7 +1198,7 @@ public:
 
 	bool operator==(const FString& other)
 	{
-#ifdef UTF16
+#ifdef UTF16_FSTRING
 		return (wcscmp(ArrayData, other.ArrayData) == 0);
 #else
 		return (strcmp(ArrayData, other.ArrayData) == 0);
@@ -1207,7 +1207,7 @@ public:
 
 	bool operator!=(const FString& other)
 	{
-#ifdef UTF16
+#ifdef UTF16_FSTRING
 		return (wcscmp(ArrayData, other.ArrayData) != 0);
 #else
 		return (strcmp(ArrayData, other.ArrayData) != 0);
