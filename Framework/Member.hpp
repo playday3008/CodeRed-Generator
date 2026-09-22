@@ -104,20 +104,19 @@ public:
 
 public:
 	Member();
-	Member(EMemberTypes type, size_t size);
+	Member(EMemberTypes type, size_t size, const std::string& label);
 	Member(const Member& member);
 	~Member();
 
 public:                                             // Global Utils
 	static std::string GetName(EClassTypes type);   // Returns the string name of the enum used for logging and messageboxes.
-	static std::string GetLabel(EMemberTypes type); // Returns the string version of the member used for printing in the generated sdk.
 	static uintptr_t GetOffset(EMemberTypes type);  // Returns the members offset in its defined class.
 	static size_t GetClassSize(EClassTypes type);   // Returns the "sizeof" for the given class type.
 	static size_t GetClassOffset(EClassTypes type); // Returns the start offset of the given type, taking into account its inherited classes.
 
 public:
-	static void Register(EMemberTypes type, size_t size);             // This should only be called by the "DECLARE_MEMBER(_ARRAY)" macro!
-	static std::map<size_t, Member*> GetRegistered(EClassTypes type); // Returns registered members for the given class type, sorted by their offsets.
+	static void Register(EMemberTypes type, size_t size, const std::string& label); // This should only be called by the "DECLARE_MEMBER(_ARRAY)" macro!
+	static std::map<size_t, Member*> GetRegistered(EClassTypes type);               // Returns registered members for the given class type, sorted by their offsets.
 
 private:
 	static void AddRegistered(std::map<size_t, Member*>& members, EMemberTypes type);
@@ -128,8 +127,15 @@ public:
 	Member& operator=(const Member& member);
 };
 
+// The label printed in the generated sdk is built from the declared type, so a member
+// can never be emitted as a type it was not declared as. Registering a member whose
+// declaration lives elsewhere (a union member, for example) calls REGISTER_MEMBER
+// directly, and must pass the same type the declaration uses.
 #define REGISTER_MEMBER(Type, Name, Kind) \
-	static void Register_##Name() { Member::Register(Kind, sizeof(Type)); }
+	static void Register_##Name() { Member::Register(Kind, sizeof(Type), #Type " " #Name ";"); }
+
+#define REGISTER_MEMBER_ARRAY(Type, Name, Count, Kind) \
+	static void Register_##Name() { Member::Register(Kind, sizeof(Type), #Type " " #Name "[" #Count "];"); }
 
 #define DECLARE_MEMBER(Type, Name, Kind) \
 	Type Name;                           \
@@ -137,7 +143,7 @@ public:
 
 #define DECLARE_MEMBER_ARRAY(Type, Name, Count, Kind) \
 	Type Name[Count];                                 \
-	REGISTER_MEMBER(Type, Name, Kind)
+	REGISTER_MEMBER_ARRAY(Type, Name, Count, Kind)
 
 /*
 # ========================================================================================= #
