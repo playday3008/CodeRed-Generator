@@ -410,6 +410,29 @@ public:
 };
 )cpp";
 
+	const std::string NarrowWideString_Function =
+		R"cpp(// Converts UTF-16 text to the narrow encoding. Truncating each wchar_t to a char
+// instead would mangle anything outside Latin-1.
+inline std::string NarrowWideString(const std::wstring& wideString)
+{
+	if (wideString.empty())
+	{
+		return "";
+	}
+
+	int32_t length = WideCharToMultiByte(CP_UTF8, 0, wideString.data(), static_cast<int32_t>(wideString.size()), nullptr, 0, nullptr, nullptr);
+
+	if (length <= 0)
+	{
+		return "";
+	}
+
+	std::string narrowString(static_cast<size_t>(length), '\0');
+	WideCharToMultiByte(CP_UTF8, 0, wideString.data(), static_cast<int32_t>(wideString.size()), narrowString.data(), length, nullptr, nullptr);
+	return narrowString;
+}
+)cpp";
+
 	const std::string FNameEntry_Struct =
 		R"cpp(class FNameEntry
 {
@@ -451,8 +474,7 @@ public:
 
 	std::string ToString() const
 	{
-		std::wstring wstr = ToWideString();
-		return std::string(wstr.begin(), wstr.end());
+		return NarrowWideString(ToWideString());
 	}
 };
 )cpp";
@@ -790,8 +812,7 @@ public:
 	{
 		if (!empty())
 		{
-			std::wstring wstr = ToWideString();
-			return std::string(wstr.begin(), wstr.end());
+			return NarrowWideString(ToWideString());
 		}
 
 		return "";

@@ -3426,11 +3426,17 @@ namespace Generator
 		definesFile << "#include <thread>\n";
 		definesFile << "#include <vector>\n";
 
+#if defined(UTF16) || defined(UTF16_FSTRING)
+		// NarrowWideString calls WideCharToMultiByte, so this one is not optional.
+		definesFile << "\n";
+		definesFile << "#include <Windows.h>\n";
+#else
 		if (GConfig::UsingWindows())
 		{
 			definesFile << "\n";
 			definesFile << "#include <Windows.h>\n";
 		}
+#endif
 
 		if (GConfig::PrintEnumFlags())
 		{
@@ -3475,6 +3481,11 @@ namespace Generator
 		definesFile << "extern class TArray<class FNameEntry*>* GNames;\n";
 
 		Printer::Section(definesFile, "Structs");
+
+#if defined(UTF16) || defined(UTF16_FSTRING)
+		definesFile << PiecesOfCode::NarrowWideString_Function << "\n";
+#endif
+
 		definesFile << PiecesOfCode::FNameEntry_Struct << "\n";
 		StructGenerator::GenerateStructMembers(definesFile, EClassTypes::FNameEntry);
 
