@@ -958,7 +958,7 @@ public:
 		R"cpp(struct FScriptDelegate
 {
 	class UObject* Object;    // 0x0000 (0x04)
-	class FName FunctionName; // 0x0000 (0x08)
+	class FName FunctionName; // 0x0004 (0x08)
 };
 )cpp";
 
@@ -1109,14 +1109,6 @@ class UClass* UObject::FindClass(const std::string& classFullName)
 	}
 
 	return nullptr;
-}
-
-if (foundClasses.contains(classFullName))
-{
-	return foundClasses[classFullName];
-}
-
-return nullptr;
 }
 
 bool UObject::IsA(class UClass* uClass)

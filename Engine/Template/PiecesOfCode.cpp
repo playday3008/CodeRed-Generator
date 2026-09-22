@@ -956,7 +956,7 @@ public:
 		R"cpp(struct FScriptDelegate
 {
 	class UObject* Object;    // 0x0000 (0x04)
-	class FName FunctionName; // 0x0000 (0x08)
+	class FName FunctionName; // 0x0004 (0x08)
 };
 )cpp";
 
