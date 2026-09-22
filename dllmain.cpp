@@ -3466,6 +3466,9 @@ namespace Generator
 		Printer::Section(definesFile, "Classes");
 		definesFile << PiecesOfCode::TArray_Iterator << "\n";
 		definesFile << PiecesOfCode::TArray_Class << "\n";
+		// TMap has an FPointer member, so the struct has to be complete by the time it is
+		// declared. It is printed here rather than below with the rest of the structs.
+		definesFile << PiecesOfCode::FPointer_Struct << "\n";
 		definesFile << PiecesOfCode::TMap_Class << "\n";
 
 		definesFile << "extern class TArray<class UObject*>* GObjects;\n";
@@ -3490,7 +3493,6 @@ namespace Generator
 #endif
 
 		definesFile << PiecesOfCode::FScriptDelegate_Struct << "\n";
-		definesFile << PiecesOfCode::FPointer_Struct << "\n";
 		definesFile << PiecesOfCode::FQWord_Struct << "\n";
 
 		Printer::Footer(definesFile, false);
