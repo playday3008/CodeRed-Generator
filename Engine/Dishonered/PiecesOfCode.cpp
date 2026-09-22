@@ -273,7 +273,7 @@ public:
 		MaxBits(0),
 		FirstFreeIndex(0),
 		NumFreeIndices(0),
-		Hash(nullptr),
+		Hash{},
 		InlineHash(0),
 		HashSize(0)
 	{
@@ -285,7 +285,7 @@ public:
 		MaxBits(0),
 		FirstFreeIndex(0),
 		NumFreeIndices(0),
-		Hash(nullptr),
+		Hash{},
 		InlineHash(0),
 		HashSize(0)
 	{
@@ -298,7 +298,7 @@ public:
 		MaxBits(0),
 		FirstFreeIndex(0),
 		NumFreeIndices(0),
-		Hash(nullptr),
+		Hash{},
 		InlineHash(0),
 		HashSize(0)
 	{
