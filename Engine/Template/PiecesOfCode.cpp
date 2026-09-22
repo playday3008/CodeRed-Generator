@@ -1159,7 +1159,8 @@ enum EStateFlags
 	STATE_HasLocals = 0x00000008, // State has local variables.
 };
 
-// https://github.com/CodeRedModding/UnrealEngine3/blob/main/Development/Src/Core/Inc/UnStack.h#L60
+)cpp"
+		R"cpp(// https://github.com/CodeRedModding/UnrealEngine3/blob/main/Development/Src/Core/Inc/UnStack.h#L60
 // Function Flags
 enum EFunctionFlags : uint64_t
 {
@@ -1226,7 +1227,8 @@ enum EFunctionFlags : uint64_t
 	FUNC_AllFlags = 0xFFFFFFFF
 };
 
-// https://github.com/CodeRedModding/UnrealEngine3/blob/main/Development/Src/Core/Inc/UnObjBas.h#L238
+)cpp"
+		R"cpp(// https://github.com/CodeRedModding/UnrealEngine3/blob/main/Development/Src/Core/Inc/UnObjBas.h#L238
 // Proprerty Flags
 enum EPropertyFlags : uint64_t
 {
@@ -1276,7 +1278,8 @@ enum EPropertyFlags : uint64_t
 	CPF_CrossLevelActive = 0x0000200000000000,   // Property can point across levels, and will be serialized properly, and will be updated when the target is streamed in/out
 };
 
-// https://github.com/CodeRedModding/UnrealEngine3/blob/main/Development/Src/Core/Inc/UnObjBas.h#L316
+)cpp"
+		R"cpp(// https://github.com/CodeRedModding/UnrealEngine3/blob/main/Development/Src/Core/Inc/UnObjBas.h#L316
 // Object Flags
 enum EObjectFlags : uint64_t
 {
@@ -1407,7 +1410,8 @@ enum EObjectFlags : uint64_t
 	RF_AllFlags = 0xFFFFFFFFFFFFFFFF,
 };
 
-// https://github.com/CodeRedModding/UnrealEngine3/blob/main/Development/Src/Core/Inc/UnObjBas.h#L51
+)cpp"
+		R"cpp(// https://github.com/CodeRedModding/UnrealEngine3/blob/main/Development/Src/Core/Inc/UnObjBas.h#L51
 // Package Flags
 enum EPackageFlags : uint32_t
 {
@@ -1434,7 +1438,8 @@ enum EPackageFlags : uint32_t
 	PKG_FilterEditorOnly = 0x80000000,            // Package has editor-only data filtered
 };
 
-// https://github.com/CodeRedModding/UnrealEngine3/blob/7bf53e29f620b0d4ca5c9bd063a2d2dbcee732fe/Development/Src/Core/Inc/UnObjBas.h#L98
+)cpp"
+		R"cpp(// https://github.com/CodeRedModding/UnrealEngine3/blob/7bf53e29f620b0d4ca5c9bd063a2d2dbcee732fe/Development/Src/Core/Inc/UnObjBas.h#L98
 // Class Flags
 enum EClassFlags : uint32_t
 {
@@ -1519,7 +1524,8 @@ enum EClassFlags : uint32_t
 	CLASS_AllFlags = 0xFFFFFFFF,
 };
 
-// https://github.com/CodeRedModding/UnrealEngine3/blob/7bf53e29f620b0d4ca5c9bd063a2d2dbcee732fe/Development/Src/Core/Inc/UnObjBas.h#L195
+)cpp"
+		R"cpp(// https://github.com/CodeRedModding/UnrealEngine3/blob/7bf53e29f620b0d4ca5c9bd063a2d2dbcee732fe/Development/Src/Core/Inc/UnObjBas.h#L195
 // Class Cast Flags
 enum EClassCastFlag : uint32_t
 {
