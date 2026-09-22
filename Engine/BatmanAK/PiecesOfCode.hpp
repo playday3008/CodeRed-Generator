@@ -13,6 +13,9 @@ namespace PiecesOfCode
 {
 	extern const std::string TArray_Iterator;
 	extern const std::string TArray_Class;
+	// This game stores its object array inline rather than behind a data pointer, so the
+	// generated sdk needs its own class for it instead of reusing TArray.
+	extern const std::string GObjects_Class;
 	extern const std::string TMap_Class;
 	extern const std::string NarrowWideString_Function;
 	extern const std::string FNameEntry_Struct;

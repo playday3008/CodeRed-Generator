@@ -12,14 +12,11 @@
 // Uncomment this if you want to disable file logging during generation.
 //#define NO_LOGGING
 
-// Either of the two switches below makes the generated sdk convert wide text with
-// WideCharToMultiByte, so it includes "Windows.h" whether or not "m_useWindows" is set.
-
 // Uncomment this if your game uses wide characters (UTF16), the default is UTF8!
 //#define UTF16
 
 // Uncomment this if your game uses wide characters (UTF16) for FStrings!
-//#define UTF16_FSTRING
+#define UTF16_FSTRING
 
 // Below are global variables for the generator, make changes in in the cpp file only!
 

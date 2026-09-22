@@ -70,8 +70,10 @@ uintptr_t Member::GetOffset(EMemberTypes type)
 		return offsetof(FNameEntry, HashNext);
 	case EMemberTypes::FNameEntry_Index:
 		return offsetof(FNameEntry, Index);
+#ifndef FNAMEENTRY_FLAGS_IN_INDEX
 	case EMemberTypes::FNameEntry_Flags:
 		return offsetof(FNameEntry, Flags);
+#endif
 	case EMemberTypes::FNameEntry_Name:
 		return offsetof(FNameEntry, Name);
 	case EMemberTypes::UObject_VfTable:

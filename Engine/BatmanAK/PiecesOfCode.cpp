@@ -252,6 +252,61 @@ private:
 };
 )cpp";
 
+	const std::string GObjects_Class =
+		R"cpp(class GObjectsArray
+{
+public:
+	using ElementType = class UObject*;
+	using ElementPointer = ElementType*;
+	using Iterator = ElementPointer;
+
+public:
+	static const int32_t MaxElements = 785000;
+
+private:
+	ElementType ArrayData[MaxElements];
+	[[maybe_unused]] int32_t ArrayUnknown;
+	int32_t ArrayCount;
+	int32_t ArrayMax;
+
+public:
+	ElementType operator[](int32_t index) const
+	{
+		return ArrayData[index];
+	}
+
+	ElementType at(int32_t index) const
+	{
+		return ArrayData[index];
+	}
+
+	int32_t size() const
+	{
+		return ArrayCount;
+	}
+
+	int32_t capacity() const
+	{
+		return ArrayMax;
+	}
+
+	bool empty() const
+	{
+		return (size() == 0);
+	}
+
+	Iterator begin()
+	{
+		return ArrayData;
+	}
+
+	Iterator end()
+	{
+		return (ArrayData + ArrayCount);
+	}
+};
+)cpp";
+
 	const std::string TMap_Class =
 		R"cpp(template<typename TKey, typename TValue>
 class TMap
@@ -469,23 +524,53 @@ public:)cpp";
 	const std::string FNameEntry_Struct_UTF16 =
 		R"cpp(
 public:
-	FNameEntry() : Flags(0), Index(-1), HashNext(nullptr) {}
+	enum EFlags : int32_t
+	{
+		// Text at "Name" is UTF16 rather than ANSI.
+		NAME_Wide = 0x1,
+		// The bytes at "Name" are a pointer to the text rather than the text itself.
+		NAME_Pointer = 0x2
+	};
+
+public:
+	FNameEntry() : Index(-1), HashNext(nullptr), Name{} {}
 	~FNameEntry() {}
 
 public:
-	uint64_t GetFlags() const
+	int32_t GetFlags() const
 	{
-		return Flags;
+		return (Index & (NAME_Wide | NAME_Pointer));
 	}
 
+	// The real index is what is left once the two flag bits are shifted off.
 	int32_t GetIndex() const
 	{
-		return Index;
+		return (Index >> 2);
+	}
+
+	bool IsWide() const
+	{
+		return ((Index & NAME_Wide) != 0);
+	}
+
+	const char* GetAnsiName() const
+	{
+		if ((Index & NAME_Pointer) != 0)
+		{
+			return *reinterpret_cast<const char* const*>(Name);
+		}
+
+		return Name;
 	}
 
 	const wchar_t* GetWideName() const
 	{
-		return Name;
+		if ((Index & NAME_Pointer) != 0)
+		{
+			return *reinterpret_cast<const wchar_t* const*>(Name);
+		}
+
+		return reinterpret_cast<const wchar_t*>(Name);
 	}
 
 	std::wstring ToWideString() const
@@ -502,7 +587,19 @@ public:
 
 	std::string ToString() const
 	{
-		return NarrowWideString(ToWideString());
+		if (IsWide())
+		{
+			return NarrowWideString(ToWideString());
+		}
+
+		const char* ansiName = GetAnsiName();
+
+		if (ansiName)
+		{
+			return std::string(ansiName);
+		}
+
+		return "";
 	}
 };
 )cpp";
@@ -510,28 +607,82 @@ public:
 	const std::string FNameEntry_Struct_UTF8 =
 		R"cpp(
 public:
-	FNameEntry() : Flags(0), Index(-1), HashNext(nullptr) {}
+	enum EFlags : int32_t
+	{
+		// Text at "Name" is UTF16 rather than ANSI.
+		NAME_Wide = 0x1,
+		// The bytes at "Name" are a pointer to the text rather than the text itself.
+		NAME_Pointer = 0x2
+	};
+
+public:
+	FNameEntry() : Index(-1), HashNext(nullptr), Name{} {}
 	~FNameEntry() {}
 
 public:
-	uint64_t GetFlags() const
+	int32_t GetFlags() const
 	{
-		return Flags;
+		return (Index & (NAME_Wide | NAME_Pointer));
 	}
 
+	// The real index is what is left once the two flag bits are shifted off.
 	int32_t GetIndex() const
 	{
-		return Index;
+		return (Index >> 2);
+	}
+
+	bool IsWide() const
+	{
+		return ((Index & NAME_Wide) != 0);
 	}
 
 	const char* GetAnsiName() const
 	{
+		if ((Index & NAME_Pointer) != 0)
+		{
+			return *reinterpret_cast<const char* const*>(Name);
+		}
+
 		return Name;
+	}
+
+	const wchar_t* GetWideName() const
+	{
+		if ((Index & NAME_Pointer) != 0)
+		{
+			return *reinterpret_cast<const wchar_t* const*>(Name);
+		}
+
+		return reinterpret_cast<const wchar_t*>(Name);
+	}
+
+	std::wstring ToWideString() const
+	{
+		const wchar_t* wideName = GetWideName();
+
+		if (wideName)
+		{
+			return std::wstring(wideName);
+		}
+
+		return L"";
 	}
 
 	std::string ToString() const
 	{
-		return std::string(Name);
+		if (IsWide())
+		{
+			return NarrowWideString(ToWideString());
+		}
+
+		const char* ansiName = GetAnsiName();
+
+		if (ansiName)
+		{
+			return std::string(ansiName);
+		}
+
+		return "";
 	}
 };
 )cpp";
@@ -1004,7 +1155,7 @@ public:
 )cpp";
 
 	const std::string UObject_FunctionDescriptions =
-		R"cpp(	static class TArray<class UObject*>* GObjObjects();
+		R"cpp(	static class GObjectsArray* GObjObjects();
 
 	std::string GetName();
 	std::string GetNameCPP();
@@ -1036,9 +1187,9 @@ public:
 )cpp";
 
 	const std::string UObject_Functions =
-		R"cpp(class TArray<class UObject*>* UObject::GObjObjects()
+		R"cpp(class GObjectsArray* UObject::GObjObjects()
 {
-	return reinterpret_cast<TArray<UObject*>*>(GObjects);
+	return GObjects;
 }
 
 std::string UObject::GetName()

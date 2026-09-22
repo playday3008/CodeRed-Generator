@@ -6,7 +6,7 @@
 # ========================================================================================= #
 */
 
-class TArray<class UObject*>* GObjects{};
+class GObjectsArray* GObjects{};
 class TArray<class FNameEntry*>* GNames{};
 
 /*
@@ -15,9 +15,9 @@ class TArray<class FNameEntry*>* GNames{};
 # ========================================================================================= #
 */
 
-class TArray<class UObject*>* UObject::GObjObjects()
+class GObjectsArray* UObject::GObjObjects()
 {
-	return reinterpret_cast<TArray<UObject*>*>(GObjects);
+	return GObjects;
 }
 
 std::string UObject::GetName()
