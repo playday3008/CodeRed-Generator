@@ -514,6 +514,13 @@ public:
 	using ElementConstPointer = const ElementType*;
 	using ElementConstReference = const ElementType&;
 	using Iterator = TIterator<TArray<ElementType>>;
+	// TIterator only reads ElementType, so a const traversal needs a view that names it
+	// rather than a TArray instantiated over a const type, which cannot hold elements.
+	struct ConstElementView
+	{
+		using ElementType = const InElementType;
+	};
+	using ConstIterator = TIterator<ConstElementView>;
 
 private:
 	ElementPointer ArrayData;
@@ -624,9 +631,19 @@ public:
 		return Iterator(ArrayData);
 	}
 
+	ConstIterator begin() const
+	{
+		return ConstIterator(ArrayData);
+	}
+
 	Iterator end()
 	{
 		return Iterator(ArrayData + ArrayCount);
+	}
+
+	ConstIterator end() const
+	{
+		return ConstIterator(ArrayData + ArrayCount);
 	}
 
 private:
@@ -681,6 +698,7 @@ public:
 	using ElementReference = ElementType&;
 	using ElementConstReference = const ElementType&;
 	using Iterator = TIterator<class TArray<ElementType>>;
+	using ConstIterator = typename TArray<ElementType>::ConstIterator;
 
 public:
 	class TArray<ElementType> Elements; // 0x0000 (0x000C)
@@ -707,7 +725,7 @@ public:
 	{
 	}
 
-	TMap(struct FMap_Mirror& other) :
+	TMap(const struct FMap_Mirror& other) :
 		IndirectData(NULL),
 		NumBits(0),
 		MaxBits(0),
@@ -736,9 +754,9 @@ public:
 	~TMap() {}
 
 public:
-	TMap<TKey, TValue>& assign(struct FMap_Mirror& other)
+	TMap<TKey, TValue>& assign(const struct FMap_Mirror& other)
 	{
-		*this = *reinterpret_cast<TMap<TKey, TValue>*>(&other);
+		*this = *reinterpret_cast<const TMap<TKey, TValue>*>(&other);
 		return *this;
 	}
 
@@ -812,7 +830,17 @@ public:
 		return Elements.begin();
 	}
 
+	ConstIterator begin() const
+	{
+		return Elements.begin();
+	}
+
 	Iterator end()
+	{
+		return Elements.end();
+	}
+
+	ConstIterator end() const
 	{
 		return Elements.end();
 	}
