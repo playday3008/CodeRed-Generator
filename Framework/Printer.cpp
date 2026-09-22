@@ -165,9 +165,7 @@ namespace Printer
 
 		if (bPragmaPush)
 		{
-			stream << "\n#ifdef _MSC_VER\n";
-			stream << "#pragma pack(push, " + Hex(GConfig::GetFinalAlignment(), 1) + ")\n";
-			stream << "#endif\n";
+			stream << "\n#pragma pack(push, " + Hex(GConfig::GetFinalAlignment(), 1) + ")\n";
 		}
 	}
 
@@ -204,9 +202,7 @@ namespace Printer
 
 		if (bPragmaPop)
 		{
-			stream << "\n#ifdef _MSC_VER\n";
-			stream << "#pragma pack(pop)\n";
-			stream << "#endif\n";
+			stream << "\n#pragma pack(pop)\n";
 		}
 	}
 

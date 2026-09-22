@@ -432,9 +432,7 @@ enum EClassCastFlag : uint32_t
 # ========================================================================================= #
 */
 
-#ifdef _MSC_VER
 #pragma pack(push, 0x4)
-#endif
 
 template<typename TArray>
 class TIterator
@@ -1836,9 +1834,7 @@ public:
 	};
 };
 
-#ifdef _MSC_VER
 #pragma pack(pop)
-#endif
 
 /*
 # ========================================================================================= #

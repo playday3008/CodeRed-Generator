@@ -3438,6 +3438,9 @@ namespace Generator
 		}
 #endif
 
+		definesFile << "\n";
+		definesFile << "#pragma pack(push, " << Printer::Hex(GConfig::GetFinalAlignment(), 1) << ")\n";
+
 		if (GConfig::PrintEnumFlags())
 		{
 			Printer::Section(definesFile, "Flags");
@@ -3505,6 +3508,8 @@ namespace Generator
 
 		definesFile << PiecesOfCode::FScriptDelegate_Struct << "\n";
 		definesFile << PiecesOfCode::FQWord_Struct << "\n";
+
+		definesFile << "#pragma pack(pop)\n";
 
 		Printer::Footer(definesFile, false);
 		definesFile.close();
