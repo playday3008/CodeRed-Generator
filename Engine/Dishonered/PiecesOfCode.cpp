@@ -1207,9 +1207,31 @@ enum EFunctionFlags : uint64_t
 	FUNC_Lambda = 0x40000000,
 	FUNC_NetValidate = 0x80000000,
 
-	FUNC_FuncInherit = (FUNC_Exec | FUNC_Event),
-	FUNC_FuncOverrideMatch = (FUNC_Exec | FUNC_Final | FUNC_Latent | FUNC_PreOperator | FUNC_Iterator | FUNC_Static | FUNC_Public | FUNC_Protected | FUNC_Const),
-	FUNC_NetFuncFlags = (FUNC_Net | FUNC_NetReliable | FUNC_NetServer | FUNC_NetClient),
+	// clang-format off
+
+	FUNC_FuncInherit = (
+		FUNC_Exec
+		| FUNC_Event
+	),
+	FUNC_FuncOverrideMatch = (
+		FUNC_Exec
+		| FUNC_Final
+		| FUNC_Latent
+		| FUNC_PreOperator
+		| FUNC_Iterator
+		| FUNC_Static
+		| FUNC_Public
+		| FUNC_Protected
+		| FUNC_Const
+	),
+	FUNC_NetFuncFlags = (
+		FUNC_Net
+		| FUNC_NetReliable
+		| FUNC_NetServer
+		| FUNC_NetClient
+	),
+
+	// clang-format on
 
 	FUNC_AllFlags = 0xFFFFFFFF
 };
@@ -1323,13 +1345,74 @@ enum EObjectFlags : uint64_t
 	RF_MarkedByCookerTemp = 0x4000000000000000,     // Temporarily marked by content cooker (should be cleared).
 	RF_CookedStartupObject = 0x8000000000000000,    // This object was cooked into a startup package.
 
-	RF_ContextFlags = (RF_NotForClient | RF_NotForServer | RF_NotForEdit),                                                                                                                                                                               // All context flags.
-	RF_LoadContextFlags = (RF_LoadForClient | RF_LoadForServer | RF_LoadForEdit),                                                                                                                                                                        // Flags affecting loading.
-	RF_Load = (RF_ContextFlags | RF_LoadContextFlags | RF_Public | RF_Standalone | RF_Native | RF_Obsolete | RF_Protected | RF_Transactional | RF_HasStack | RF_PerObjectLocalized | RF_ClassDefaultObject | RF_ArchetypeObject | RF_LocalizedResource), // Flags to load from Unrealfiles.
-	RF_Keep = (RF_Native | RF_Marked | RF_PerObjectLocalized | RF_MisalignedObject | RF_DisregardForGC | RF_RootSet | RF_LocalizedResource),                                                                                                             // Flags to persist across loads.
-	RF_ScriptMask = (RF_Transactional | RF_Public | RF_Transient | RF_NotForClient | RF_NotForServer | RF_NotForEdit | RF_Standalone),                                                                                                                   // Script-accessible flags.
-	RF_UndoRedoMask = (RF_PendingKill),                                                                                                                                                                                                                  // Undo/ redo will store/ restore these
-	RF_PropagateToSubObjects = (RF_Public | RF_ArchetypeObject | RF_Transactional),                                                                                                                                                                      // Sub-objects will inherit these flags from their SuperObject.
+	// clang-format off
+
+	// All context flags.
+	RF_ContextFlags = (
+		RF_NotForClient
+		| RF_NotForServer
+		| RF_NotForEdit
+	),
+
+	// Flags affecting loading.
+	RF_LoadContextFlags = (
+		RF_LoadForClient
+		| RF_LoadForServer
+		| RF_LoadForEdit
+	),
+
+	// Flags to load from Unrealfiles.
+	RF_Load = (
+		RF_ContextFlags
+		| RF_LoadContextFlags
+		| RF_Public
+		| RF_Standalone
+		| RF_Native
+		| RF_Obsolete
+		| RF_Protected
+		| RF_Transactional
+		| RF_HasStack
+		| RF_PerObjectLocalized
+		| RF_ClassDefaultObject
+		| RF_ArchetypeObject
+		| RF_LocalizedResource
+	),
+
+	// Flags to persist across loads.
+	RF_Keep = (
+		RF_Native
+		| RF_Marked
+		| RF_PerObjectLocalized
+		| RF_MisalignedObject
+		| RF_DisregardForGC
+		| RF_RootSet
+		| RF_LocalizedResource
+	),
+
+	// Script-accessible flags.
+	RF_ScriptMask = (
+		RF_Transactional
+		| RF_Public
+		| RF_Transient
+		| RF_NotForClient
+		| RF_NotForServer
+		| RF_NotForEdit
+		| RF_Standalone
+	),
+
+	// Undo/Redo will store/restore these
+	RF_UndoRedoMask = (
+		RF_PendingKill
+	),
+
+	// Sub-objects will inherit these flags from their SuperObject.
+	RF_PropagateToSubObjects = (
+		RF_Public
+		| RF_ArchetypeObject
+		| RF_Transactional
+	),
+
+	// clang-format on
 
 	RF_AllFlags = 0xFFFFFFFFFFFFFFFF,
 };
@@ -1401,14 +1484,47 @@ enum EClassFlags : uint32_t
 	CLASS_IsAUFunction = 0x00080000,
 	CLASS_IsAUStructProperty = 0x00100000,
 
+	// clang-format off
+
 	// Flags to inherit from base class.
-	CLASS_Inherit = (CLASS_Transient | CLASS_Config | CLASS_Localized | CLASS_SafeReplace | CLASS_PerObjectConfig | CLASS_PerObjectLocalized | CLASS_Placeable | CLASS_IsAUProperty | CLASS_IsAUObjectProperty | CLASS_IsAUBoolProperty | CLASS_IsAUStructProperty | CLASS_IsAUState | CLASS_IsAUFunction | CLASS_HasComponents | CLASS_Deprecated | CLASS_Intrinsic | CLASS_HasInstancedProps | CLASS_HasCrossLevelRefs),
+	CLASS_Inherit = (
+		CLASS_Transient
+		| CLASS_Config
+		| CLASS_Localized
+		| CLASS_SafeReplace
+		| CLASS_PerObjectConfig
+		| CLASS_PerObjectLocalized
+		| CLASS_Placeable
+		| CLASS_IsAUProperty
+		| CLASS_IsAUObjectProperty
+		| CLASS_IsAUBoolProperty
+		| CLASS_IsAUStructProperty
+		| CLASS_IsAUState
+		| CLASS_IsAUFunction
+		| CLASS_HasComponents
+		| CLASS_Deprecated
+		| CLASS_Intrinsic
+		| CLASS_HasInstancedProps
+		| CLASS_HasCrossLevelRefs
+	),
 
 	// These flags will be cleared by the compiler when the class is parsed during script compilation.
-	CLASS_RecompilerClear = (CLASS_Inherit | CLASS_Abstract | CLASS_NoExport | CLASS_NativeReplication | CLASS_Native),
+	CLASS_RecompilerClear = (
+		CLASS_Inherit
+		| CLASS_Abstract
+		| CLASS_NoExport
+		| CLASS_NativeReplication
+		| CLASS_Native
+	),
 
 	// These flags will be inherited from the base class only for non-intrinsic classes.
-	CLASS_ScriptInherit = (CLASS_Inherit | CLASS_EditInlineNew | CLASS_CollapseCategories),
+	CLASS_ScriptInherit = (
+		CLASS_Inherit
+		| CLASS_EditInlineNew
+		| CLASS_CollapseCategories
+	),
+
+	// clang-format on
 
 	CLASS_AllFlags = 0xFFFFFFFF,
 };
