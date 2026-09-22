@@ -173,10 +173,10 @@ std::string GConfig::GetTypeOverride(const std::string& name)
 */
 
 // If you want to use "m_peIndex" change this to true, if not virutal voids will be generated from "m_peMask" and "m_pePattern".
-bool GConfig::m_useIndex = false;
+bool GConfig::m_useIndex = true;
 
 // Position where the process event function is in UObject's VfTable.
-int32_t GConfig::m_peIndex = -1;
+int32_t GConfig::m_peIndex = 71;
 
 // Half byte mask, use question marks for unknown data.
 std::string GConfig::m_peMask = "xxx???x";
@@ -221,18 +221,18 @@ bool GConfig::m_useOffsets = false;
 uintptr_t GConfig::m_gobjectOffset = 0x0;
 
 // Half byte mask, use question marks for unknown data.
-std::string GConfig::m_gobjectMask = "xxx???x";
+std::string GConfig::m_gobjectMask = "xxxxxxxxxxxxxxxxxxxxx????xxxxxxxxxxxxxxxx????";
 
 // First value is the actual hex escaped pattern, second value is the string version of it printed in the final sdk.
-std::pair<uint8_t*, std::string> GConfig::m_gobjectPattern = { (uint8_t*)"\x10\x11\x12\x00\x00\x00\x13", "\\x10\\x11\\x12\\x00\\x00\\x00\\x13" };
+std::pair<uint8_t*, std::string> GConfig::m_gobjectPattern = { (uint8_t*)"\x48\x89\x6c\x24\x18\x56\x48\x83\xec\x20\x48\x89\x5c\x24\x30\x48\x8b\xf1\x48\x8d\x2d\x00\x00\x00\x00\x48\x89\x7c\x24\x38\x66\x90\xff\x46\x08\x48\x63\x46\x08\x3b\x05\x00\x00\x00\x00", "\\x48\\x89\\x6c\\x24\\x18\\x56\\x48\\x83\\xec\\x20\\x48\\x89\\x5c\\x24\\x30\\x48\\x8b\\xf1\\x48\\x8d\\x2d\\x00\\x00\\x00\\x00\\x48\\x89\\x7c\\x24\\x38\\x66\\x90\\xff\\x46\\x08\\x48\\x63\\x46\\x08\\x3b\\x05\\x00\\x00\\x00\\x00" };
 
 uintptr_t GConfig::m_gnameOffset = 0x0;
 
 // Half byte mask, use question marks for unknown data.
-std::string GConfig::m_gnameMask = "xxx???x";
+std::string GConfig::m_gnameMask = "xxxxxxxxxxxx????xxxxxxx";
 
 // First value is the actual hex escaped pattern, second value is the string version of it printed in the final sdk.
-std::pair<uint8_t*, std::string> GConfig::m_gnamePattern = { (uint8_t*)"\x10\x11\x12\x00\x00\x00\x13", "\\x10\\x11\\x12\\x00\\x00\\x00\\x13" };
+std::pair<uint8_t*, std::string> GConfig::m_gnamePattern = { (uint8_t*)"\x40\x53\x48\x83\xec\x20\x48\x63\x01\x48\x8b\x0d\x00\x00\x00\x00\x48\x8b\xda\x48\x8b\x0c\xc1", "\\x40\\x53\\x48\\x83\\xec\\x20\\x48\\x63\\x01\\x48\\x8b\\x0d\\x00\\x00\\x00\\x00\\x48\\x8b\\xda\\x48\\x8b\\x0c\\xc1" };
 
 bool GConfig::UsingOffsets()
 {
@@ -286,16 +286,16 @@ const std::string& GConfig::GetGNameMask()
 */
 
 // Mainly just used for the printed headers at the top of each generated file.
-std::string GConfig::m_gameNameLong = "Template Game";
+std::string GConfig::m_gameNameLong = "Batman: Arkham Knight";
 
 // This is used for the output folder name, along with the printed headers at the top of each file.
-std::string GConfig::m_gameNameShort = "TSDK";
+std::string GConfig::m_gameNameShort = "BatmanAK";
 
 // Optional, mainly for your own sake, like comparing sdks you generate or release to people.
 std::string GConfig::m_gameVersion = "1.0.0.0";
 
 // Directory folder that your want your sdk to be generated in.
-std::filesystem::path GConfig::m_outputPath = "I_FORGOT_TO_SET_A_PATH";
+std::filesystem::path GConfig::m_outputPath = "BatmanAK_SDK";
 
 const std::string& GConfig::GetGameNameLong()
 {

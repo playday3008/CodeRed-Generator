@@ -61,6 +61,19 @@ function(add_engine ENGINE_NAME)
         message(FATAL_ERROR "No engine folder at ${ENGINE_DIR}")
     endif()
 
+    # An engine describing a game that only ships for one architecture can say so in a
+    # "PointerSize.cmake", which sets ENGINE_POINTER_SIZE. Its class layouts cannot be
+    # satisfied by the other architecture, so the target is skipped rather than failed.
+    set(ENGINE_POINTER_SIZE "")
+    if(EXISTS "${ENGINE_DIR}/PointerSize.cmake")
+        include("${ENGINE_DIR}/PointerSize.cmake")
+    endif()
+
+    if(ENGINE_POINTER_SIZE AND NOT ENGINE_POINTER_SIZE EQUAL CMAKE_SIZEOF_VOID_P)
+        message(STATUS "Skipping engine ${ENGINE_NAME}, it needs a ${ENGINE_POINTER_SIZE} byte pointer build")
+        return()
+    endif()
+
     set(TARGET_NAME "CodeRedGenerator.${ENGINE_NAME}")
 
     add_library(${TARGET_NAME} SHARED
