@@ -3463,11 +3463,11 @@ namespace Generator
 			definesFile << "// GNames\n";
 			definesFile << "#define GNames_Pattern (const uint8_t*)\"" << GConfig::GetGNameStr() + "\"\n";
 			definesFile << "#define GNames_Mask (const char*)\"" << GConfig::GetGNameMask() + "\"\n";
-
-			definesFile << "// Process Event\n";
-			definesFile << "#define ProcessEvent_Pattern (const uint8_t*)\"" << GConfig::GetProcessEventStr() << "\"\n";
-			definesFile << "#define ProcessEvent_Mask (const char*)\"" << GConfig::GetProcessEventMask() << "\"\n";
 		}
+
+		definesFile << "// Process Event\n";
+		definesFile << "#define ProcessEvent_Pattern (const uint8_t*)\"" << GConfig::GetProcessEventStr() << "\"\n";
+		definesFile << "#define ProcessEvent_Mask (const char*)\"" << GConfig::GetProcessEventMask() << "\"\n";
 
 		Printer::Section(definesFile, "Classes");
 		definesFile << PiecesOfCode::TArray_Iterator << "\n";
