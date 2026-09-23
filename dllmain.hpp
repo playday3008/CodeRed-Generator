@@ -224,6 +224,7 @@ namespace StructGenerator
 
 namespace ClassGenerator
 {
+	std::string GenerateClassName(class UClass* uClass);
 	void GenerateClassMembers(std::ostringstream& classStream, class UClass* uClass, EClassTypes classType);
 	void GenerateClass(std::ofstream& stream, const UnrealObject& unrealObj);
 	void GenerateClassPre(std::ofstream& stream, const UnrealObject& unrealObj, class UObject* packageObj);
