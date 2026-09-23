@@ -2814,7 +2814,7 @@ namespace FunctionGenerator
 				{
 					codeStream << "template<typename T> T GetVirtualFunction(const void* instance, size_t index)\n";
 					codeStream << "{\n";
-					codeStream << "\tauto vtable = *static_cast<const void***>(const_cast<void*>(instance));\n";
+					codeStream << "\tauto vtable = *static_cast<void***>(const_cast<void*>(instance));\n";
 					codeStream << "\treturn reinterpret_cast<T>(vtable[index]);\n";
 					codeStream << "}\n\n";
 
