@@ -1371,6 +1371,30 @@ namespace Retrievers
 
 		return NULL;
 	}
+
+	uintptr_t ResolveRelative(uintptr_t instruction, size_t operandOffset, size_t instructionSize)
+	{
+		if (!instruction)
+		{
+			return NULL;
+		}
+
+		int32_t displacement = *reinterpret_cast<int32_t*>(instruction + operandOffset);
+		return (instruction + instructionSize + displacement);
+	}
+
+	// Resolves a global reached through a RIP relative operand, given the address a pattern
+	// matched at and where the instruction sits inside that match. A failed match stays NULL
+	// rather than becoming an offset from address zero.
+	uintptr_t ResolveRelativeMatch(uintptr_t match, size_t instructionOffset, size_t operandOffset, size_t instructionSize)
+	{
+		if (!match)
+		{
+			return NULL;
+		}
+
+		return ResolveRelative(match + instructionOffset, operandOffset, instructionSize);
+	}
 }
 
 namespace ConstGenerator
@@ -3487,8 +3511,18 @@ namespace Generator
 		}
 
 		definesFile << "// Process Event\n";
-		definesFile << "#define ProcessEvent_Pattern (const uint8_t*)\"" << GConfig::GetProcessEventStr() << "\"\n";
-		definesFile << "#define ProcessEvent_Mask (const char*)\"" << GConfig::GetProcessEventMask() << "\"\n";
+
+		if (GConfig::UsingProcessEventIndex())
+		{
+			// The pattern and mask are unused when the vftable index is what locates it, and
+			// an engine configured this way can leave them at their placeholder values.
+			definesFile << "#define ProcessEvent_Index " << GConfig::GetProcessEventIndex() << "\n";
+		}
+		else
+		{
+			definesFile << "#define ProcessEvent_Pattern (const uint8_t*)\"" << GConfig::GetProcessEventStr() << "\"\n";
+			definesFile << "#define ProcessEvent_Mask (const char*)\"" << GConfig::GetProcessEventMask() << "\"\n";
+		}
 
 		Printer::Section(definesFile, "Classes");
 		definesFile << PiecesOfCode::TArray_Iterator << "\n";
@@ -3498,7 +3532,14 @@ namespace Generator
 		definesFile << PiecesOfCode::FPointer_Struct << "\n";
 		definesFile << PiecesOfCode::TMap_Class << "\n";
 
+#ifdef GOBJECTS_HAS_MAX_ELEMENTS
+		// The object array is stored inline in this engine, so the sdk gets a class matching
+		// that layout instead of a TArray, whose data pointer would not line up with it.
+		definesFile << PiecesOfCode::GObjects_Class << "\n";
+		definesFile << "extern class GObjectsArray* GObjects;\n";
+#else
 		definesFile << "extern class TArray<class UObject*>* GObjects;\n";
+#endif
 		definesFile << "extern class TArray<class FNameEntry*>* GNames;\n";
 
 		Printer::Section(definesFile, "Structs");
@@ -3537,7 +3578,12 @@ namespace Generator
 
 		definesFile << "#include \"GameDefines.hpp\"\n";
 		Printer::Section(definesFile, "Initialize Globals");
+#ifdef GOBJECTS_HAS_MAX_ELEMENTS
+		// Has to name the same type as the extern GenerateDefines prints into the header.
+		definesFile << "class GObjectsArray* GObjects{};\n";
+#else
 		definesFile << "class TArray<class UObject*>* GObjects{};\n";
+#endif
 		definesFile << "class TArray<class FNameEntry*>* GNames{};\n\n";
 
 		Printer::Footer(definesFile, false);
@@ -3655,13 +3701,35 @@ namespace Generator
 		{
 			if (GConfig::UsingOffsets())
 			{
-				GObjects = reinterpret_cast<TArray<UObject*>*>(Retrievers::GetBaseAddress() + GConfig::GetGObjectOffset());
+				GObjects = reinterpret_cast<decltype(GObjects)>(Retrievers::GetBaseAddress() + GConfig::GetGObjectOffset());
 				GNames = reinterpret_cast<TArray<FNameEntry*>*>(Retrievers::GetBaseAddress() + GConfig::GetGNameOffset());
 			}
 			else
 			{
-				GObjects = reinterpret_cast<TArray<UObject*>*>(Retrievers::FindPattern(GConfig::GetGObjectPattern(), GConfig::GetGObjectMask()));
-				GNames = reinterpret_cast<TArray<FNameEntry*>*>(Retrievers::FindPattern(GConfig::GetGNamePattern(), GConfig::GetGNameMask()));
+				uintptr_t gobjectMatch = Retrievers::FindPattern(GConfig::GetGObjectPattern(), GConfig::GetGObjectMask());
+				uintptr_t gnameMatch = Retrievers::FindPattern(GConfig::GetGNamePattern(), GConfig::GetGNameMask());
+
+				if (!gobjectMatch)
+				{
+					Utils::MessageboxError("Error: Failed to find the GObjects pattern, it does not match this build of the game!");
+				}
+
+				if (!gnameMatch)
+				{
+					Utils::MessageboxError("Error: Failed to find the GNames pattern, it does not match this build of the game!");
+				}
+
+#ifdef GOBJECTS_RIP_RELATIVE
+				GObjects = reinterpret_cast<decltype(GObjects)>(Retrievers::ResolveRelativeMatch(gobjectMatch, GOBJECTS_RIP_RELATIVE));
+#else
+				GObjects = reinterpret_cast<decltype(GObjects)>(gobjectMatch);
+#endif
+
+#ifdef GNAMES_RIP_RELATIVE
+				GNames = reinterpret_cast<TArray<FNameEntry*>*>(Retrievers::ResolveRelativeMatch(gnameMatch, GNAMES_RIP_RELATIVE));
+#else
+				GNames = reinterpret_cast<TArray<FNameEntry*>*>(gnameMatch);
+#endif
 			}
 
 			if (AreGlobalsValid())
@@ -3672,7 +3740,9 @@ namespace Generator
 				// Structs
 				FNameEntry::Register_HashNext();
 				FNameEntry::Register_Index();
-				FNameEntry::Register_Flags();
+#ifndef FNAMEENTRY_FLAGS_IN_INDEX
+				FNameEntry::Register_Flags(); // Not needed if the flags are packed into the index, define "FNAMEENTRY_FLAGS_IN_INDEX" in your "GameDefines.hpp" file!
+#endif
 				FNameEntry::Register_Name();
 
 				// Objects
@@ -3863,7 +3933,14 @@ namespace Generator
 		// clang-format off
 		if (GObjects
 			&& !UObject::GObjObjects()->empty()
+#ifdef GOBJECTS_HAS_MAX_ELEMENTS
+			// Capacity is a constant of the game rather than a value read back out of the
+			// array, so this is a real check on whether the pattern resolved to the array.
+			&& (UObject::GObjObjects()->capacity() == GObjectsArray::MaxElements)
+			&& (UObject::GObjObjects()->size() <= GObjectsArray::MaxElements))
+#else
 			&& (UObject::GObjObjects()->capacity() > UObject::GObjObjects()->size()))
+#endif
 		// clang-format on
 		{
 			return true;
