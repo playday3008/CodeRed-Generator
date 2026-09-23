@@ -1514,7 +1514,7 @@ namespace EnumGenerator
 					{
 						std::string freeName = (enumName + "_" + std::to_string(i));
 
-						if (!m_enumNames.contains(freeName))
+						if (!m_enumNames.contains(freeName) || (m_enumNames[freeName] == unrealObj->Object))
 						{
 							enumName = freeName;
 							break;
