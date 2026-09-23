@@ -554,7 +554,7 @@ std::string UnrealProperty::GetType(bool bIgnoreEnum, bool bFunctionParam, bool 
 
 			if (classProperty && classProperty->MetaClass)
 			{
-				typeStr = ("class " + UnrealObject::CreateValidName(classProperty->MetaClass->GetNameCPP()) + "*");
+				typeStr = ("class " + ClassGenerator::GenerateClassName(classProperty->MetaClass) + "*");
 			}
 		}
 		else if (Type == EPropertyTypes::UObject)
@@ -563,7 +563,7 @@ std::string UnrealProperty::GetType(bool bIgnoreEnum, bool bFunctionParam, bool 
 
 			if (objectProperty && objectProperty->PropertyClass)
 			{
-				typeStr = ("class " + UnrealObject::CreateValidName(objectProperty->PropertyClass->GetNameCPP()) + "*");
+				typeStr = ("class " + ClassGenerator::GenerateClassName(objectProperty->PropertyClass) + "*");
 			}
 		}
 		else if (Type == EPropertyTypes::UInterface)
@@ -572,7 +572,7 @@ std::string UnrealProperty::GetType(bool bIgnoreEnum, bool bFunctionParam, bool 
 
 			if (interfaceProperty && interfaceProperty->InterfaceClass)
 			{
-				typeStr = ("class " + UnrealObject::CreateValidName(interfaceProperty->InterfaceClass->GetNameCPP()) + "*");
+				typeStr = ("class " + ClassGenerator::GenerateClassName(interfaceProperty->InterfaceClass) + "*");
 			}
 		}
 		else if (Type == EPropertyTypes::TArray)
@@ -2120,6 +2120,24 @@ namespace ClassGenerator
 {
 	static std::map<std::string, int32_t> m_generatedClasses;
 
+	std::string GenerateClassName(class UClass* uClass)
+	{
+		std::string classNameCPP = UnrealObject::CreateValidName(uClass->GetNameCPP());
+
+		// Two packages can each define a class with the same name, which would otherwise emit the same C++ type twice.
+		if (GCache::CountObject<UClass>(uClass->GetName()) > 1)
+		{
+			UObject* packageObj = uClass->GetPackageObj();
+
+			if (packageObj)
+			{
+				classNameCPP += ("_" + UnrealObject::CreateValidName(packageObj->GetName()));
+			}
+		}
+
+		return classNameCPP;
+	}
+
 	void GenerateClassMembers(std::ostringstream& classStream, class UClass* uClass, EClassTypes classType)
 	{
 		if (uClass && (classType != EClassTypes::Unknown))
@@ -2205,7 +2223,7 @@ namespace ClassGenerator
 		{
 			UClass* uClass = static_cast<UClass*>(unrealObj.Object);
 			UClass* uSuperClass = static_cast<UClass*>(uClass->SuperField);
-			std::string classNameCPP = UnrealObject::CreateValidName(uClass->GetNameCPP());
+			std::string classNameCPP = GenerateClassName(uClass);
 
 			if (GConfig::IsTypeBlacklisted(classNameCPP))
 			{
@@ -2262,7 +2280,7 @@ namespace ClassGenerator
 								<< " (" << Printer::Hex(uSuperClass->PropertySize, EWidthTypes::Size)
 								<< " - " << Printer::Hex(uClass->PropertySize, EWidthTypes::Size)
 								<< ")\n"
-								<< "class " << classNameCPP << " : public " << UnrealObject::CreateValidName(uSuperClass->GetNameCPP());
+								<< "class " << classNameCPP << " : public " << GenerateClassName(uSuperClass);
 				}
 				else
 				{
@@ -2634,7 +2652,7 @@ namespace ParameterGenerator
 			}
 		}
 
-		std::string classNameCPP = UnrealObject::CreateValidName(uClass->GetNameCPP());
+		std::string classNameCPP = ClassGenerator::GenerateClassName(uClass);
 
 		for (UnrealObject& functionObj : classFunctions)
 		{
@@ -2826,7 +2844,7 @@ namespace FunctionGenerator
 		if (unrealObj.IsValid())
 		{
 			UClass* uClass = static_cast<UClass*>(unrealObj.Object);
-			std::string classNameCPP = UnrealObject::CreateValidName(uClass->GetNameCPP());
+			std::string classNameCPP = ClassGenerator::GenerateClassName(uClass);
 			std::ostringstream codeStream;
 			std::ostringstream functionStream;
 
