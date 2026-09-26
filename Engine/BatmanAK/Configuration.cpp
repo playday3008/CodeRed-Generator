@@ -60,7 +60,7 @@ uint32_t GConfig::GetFunctionSpacing()
 bool GConfig::m_useWindows = true;
 
 // If you want to use objects internal integer for finding static classes and functions, note that these will change every time the game updates.
-bool GConfig::m_useConstants = true;
+bool GConfig::m_useConstants = false;
 
 // If you want to remove the "iNative" index on functions before calling process event.
 bool GConfig::m_removeNativeIndex = true;
