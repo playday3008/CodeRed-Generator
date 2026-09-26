@@ -66,7 +66,7 @@ bool GConfig::m_useConstants = false;
 bool GConfig::m_removeNativeIndex = true;
 
 // If you want to remove the "FUNC_Native" flag on functions before calling process event.
-bool GConfig::m_removeNativeFlags = true;
+bool GConfig::m_removeNativeFlags = false;
 
 // If you want the EFunctionFlags, EPropertyFlags, and EObjectFlags enums so be printed in the final sdk.
 bool GConfig::m_printEnumFlags = true;
