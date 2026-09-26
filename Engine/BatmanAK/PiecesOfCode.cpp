@@ -1448,54 +1448,59 @@ enum EFunctionFlags : uint64_t
 };
 
 )cpp"
-		R"cpp(// https://github.com/CodeRedModding/UnrealEngine3/blob/main/Development/Src/Core/Inc/UnObjBas.h#L238
+		R"cpp(// Property flag values of this build. Each value is backed by a flag test in the Steam executable (address given)
+// or by the flag matching the stock UE3 script keyword on the same properties in a runtime dump.
 // Proprerty Flags
 enum EPropertyFlags : uint64_t
 {
-	CPF_Edit = 0x0000000000000001,               // Property is user-settable in the editor.
-	CPF_Const = 0x0000000000000002,              // Actor's property always matches class's default actor property.
-	CPF_Input = 0x0000000000000004,              // Variable is writable by the input system.
-	CPF_ExportObject = 0x0000000000000008,       // Object can be exported with actor.
-	CPF_OptionalParm = 0x0000000000000010,       // Optional parameter (if CPF_Param is set).
-	CPF_Net = 0x0000000000000020,                // Property is relevant to network replication.
-	CPF_EditFixedSize = 0x0000000000000040,      // Indicates that elements of an array can be modified, but its size cannot be changed.
-	CPF_Parm = 0x0000000000000080,               // Function/When call parameter.
-	CPF_OutParm = 0x0000000000000100,            // Value is copied out after function call.
-	CPF_SkipParm = 0x0000000000000200,           // Property is a short-circuitable evaluation function parm.
-	CPF_ReturnParm = 0x0000000000000400,         // Return value.
-	CPF_CoerceParm = 0x0000000000000800,         // Coerce args into this function parameter.
-	CPF_Native = 0x0000000000001000,             // Property is native: C++ code is responsible for serializing it.
-	CPF_Transient = 0x0000000000002000,          // Property is transient: shouldn't be saved, zero-filled at load time.
-	CPF_Config = 0x0000000000004000,             // Property should be loaded/saved as permanent profile.
-	CPF_Localized = 0x0000000000008000,          // Property should be loaded as localizable text.
-	CPF_Travel = 0x0000000000010000,             // Property travels across levels/servers.
-	CPF_EditConst = 0x0000000000020000,          // Property is uneditable in the editor.
-	CPF_GlobalConfig = 0x0000000000040000,       // Load config from base class, not subclass.
-	CPF_Component = 0x0000000000080000,          // Property containts component references.
-	CPF_AlwaysInit = 0x0000000000100000,         // Property should never be exported as NoInit(@todo - this doesn't need to be a property flag...only used during make).
-	CPF_DuplicateTransient = 0x0000000000200000, // Property should always be reset to the default value during any type of duplication (copy/paste, binary duplication, etc.).
-	CPF_NeedCtorLink = 0x0000000000400000,       // Fields need construction/destruction.
-	CPF_NoExport = 0x0000000000800000,           // Property should not be exported to the native class header file.
-	CPF_NoClear = 0x0000000002000000,            // Hide clear (and browse) button.
-	CPF_EditInline = 0x0000000004000000,         // Edit this object reference inline.
-	CPF_EditInlineUse = 0x0000000010000000,      // EditInline with Use button.
-	CPF_EditFindable = 0x0000000008000000,       // References are set by clicking on actors in the editor viewports.
-	CPF_Deprecated = 0x0000000020000000,         // Property is deprecated.  Read it from an archive, but don't save it.
-	CPF_DataBinding = 0x0000000040000000,        // Indicates that this property should be exposed to data stores.
-	CPF_SerializeText = 0x0000000080000000,      // Native property should be serialized as text (ImportText, ExportText).
-	CPF_RepNotify = 0x0000000100000000,          // Notify actors when a property is replicated.
-	CPF_Interp = 0x0000000200000000,             // Interpolatable property for use with matinee.
-	CPF_NonTransactional = 0x0000000400000000,   // Property isn't transacted.
-	CPF_EditorOnly = 0x0000000800000000,         // Property should only be loaded in the editor.
-	CPF_NotForConsole = 0x0000001000000000,      // Property should not be loaded on console (or be a console cooker commandlet).
-	CPF_RepRetry = 0x0000002000000000,           // Property replication of this property if it fails to be fully sent (e.g. object references not yet available to serialize over the network).
-	CPF_PrivateWrite = 0x0000004000000000,       // Property is const outside of the class it was declared in.
-	CPF_ProtectedWrite = 0x0000008000000000,     // Property is const outside of the class it was declared in and subclasses.
-	CPF_ArchetypeProperty = 0x0000010000000000,  // Property should be ignored by archives which have ArIgnoreArchetypeRef set.
-	CPF_EditHide = 0x0000020000000000,           // Property should never be shown in a properties window.
-	CPF_EditTextBox = 0x0000040000000000,        // Property can be edited using a text dialog box.
-	CPF_CrossLevelPassive = 0x0000100000000000,  // Property can point across levels, and will be serialized properly, but assumes it's target exists in-game (non-editor)
-	CPF_CrossLevelActive = 0x0000200000000000,   // Property can point across levels, and will be serialized properly, and will be updated when the target is streamed in/out
+	CPF_Const = 0x0000000000000001,                  // Const; dump: on 1622 of 1632 stock const properties and every localized one.
+	CPF_Input = 0x0000000000000002,                  // Input; dump: every stock input var in PlayerInput.
+	CPF_ExportObject = 0x0000000000000004,           // ExportObject; UObjectProperty::Link 0x140F1A0F0, cleared by UInterfaceProperty::Link 0x140F1A280.
+	CPF_Parm = 0x0000000000000008,                   // Function/call parameter; UObject::ProcessEvent 0x140F90E57.
+	CPF_OptionalParm = 0x0000000000000010,           // Optional parameter (if CPF_Parm is set); ProcessEvent 0x140F90E97.
+	CPF_OutParm = 0x0000000000000020,                // Value is copied out after function call; ProcessEvent 0x140F90E65.
+	CPF_SkipParm = 0x0000000000000040,               // Short-circuitable parameter; dump: B of the AndAnd/OrOr operators only.
+	CPF_ReturnParm = 0x0000000000000080,             // Return value; UFunction::Serialize 0x140F9CA74.
+	CPF_CoerceParm = 0x0000000000000100,             // Coerce args into this parameter; dump: stock coerce parameters.
+	CPF_Native = 0x0000000000000200,                 // Native; UProperty::Port 0x140F1C3B0 and ShouldSerializeValue 0x140F7AB40.
+	CPF_Transient = 0x0000000000000400,              // Transient; UProperty::Port 0x140F1C3B0 and ShouldSerializeValue 0x140F7AB40.
+	CPF_Config = 0x0000000000000800,                 // Config; LoadConfig 0x140F41780, ImportText check 0x140F1F870.
+	CPF_Localized = 0x0000000000001000,              // Localized; ImportText check 0x140F1F870.
+	CPF_GlobalConfig = 0x0000000000002000,           // GlobalConfig; LoadConfig 0x140F41780 reads the owner class section when set.
+	CPF_Component = 0x0000000000004000,              // Component; UProperty::Port 0x140F1C3B0 (PPF_ComponentsOnly), UObjectProperty::Link 0x140F1A0F0.
+	CPF_DuplicateTransient = 0x0000000000008000,     // DuplicateTransient; ShouldSerializeValue 0x140F7AB40 (PPF_Duplicate).
+	CPF_NeedCtorLink = 0x0000000000010000,           // Fields need construction/destruction; UStruct::Link 0x140F9FBD0.
+	CPF_NoExport = 0x0000000000020000,               // NoExport; dump: all 15 stock noexport properties and every VfTable_ pointer.
+	CPF_NoImport = 0x0000000000040000,               // NoImport; dump: all 20 stock noimport properties.
+	CPF_Deprecated = 0x0000000000080000,             // Deprecated; ShouldSerializeValue 0x140F7AB40 (saving).
+	CPF_DataBinding = 0x0000000000100000,            // DataBinding; dump: the OnlineGameSettings databinding vars, read by the URL option builder 0x14071E900.
+	CPF_SerializeText = 0x0000000000200000,          // SerializeText; UProperty::Port 0x140F1C3B0 exports native properties that have it.
+	CPF_NonTransactional = 0x0000000000400000,       // NonTransactional; ShouldSerializeValue 0x140F7AB40 (transacting).
+	CPF_ArchetypeProperty = 0x0000000000800000,      // ArchetypeProperty; ShouldSerializeValue 0x140F7AB40 (ignoring archetype refs), not set on any dumped property.
+	CPF_CrossLevelPassive = 0x0000000001000000,      // CrossLevelPassive; object property serialization 0x140FA02C0 tests it with CPF_CrossLevelActive as a pair.
+	CPF_CrossLevelActive = 0x0000000002000000,       // CrossLevelActive; object property serialization 0x140FA02C0, cross-level reference fixup 0x140F6B470.
+	CPF_Net = 0x0000000004000000,                    // Relevant to network replication; dump: every hit is named in a replication block.
+	CPF_RepNotify = 0x0000000010000000,              // Notify actors when replicated; dump: all 47 stock repnotify properties.
+	CPF_Unknown_0x80000000 = 0x0000000080000000,     // Rocksteady addition, meaning unknown; property initialization 0x140F2D940 fills such a float with rand(), only set on PerInstanceRandom.
+	CPF_Edit = 0x0000000100000000,                   // Editable; dump: on 3979 of 4126 stock var() properties.
+	CPF_EditFixedSize = 0x0000000200000000,          // EditFixedSize; dump: all 29 stock editfixedsize properties.
+	CPF_EditConst = 0x0000000400000000,              // EditConst; dump: on 143 of 148 stock editconst properties.
+	CPF_NoClear = 0x0000000800000000,                // NoClear; dump: all 35 stock noclear properties.
+	CPF_EditHide = 0x0000001000000000,               // EditHide; UProperty::Port 0x140F1C3B0 (PPF_PropertyWindow).
+	CPF_EditTextBox = 0x0000002000000000,            // EditTextBox; dump: only on MaterialExpressionCustom.Code, the stock edittextbox property.
+	CPF_EditInline = 0x0000004000000000,             // EditInline; UObjectProperty::Link 0x140F1A0F0.
+	CPF_EditInlineUse = 0x0000008000000000,          // EditInlineUse; dump: only on the stock editinlineuse property.
+	CPF_Interp = 0x0000010000000000,                 // Interp; dump: on 174 of 175 stock interp properties.
+	CPF_AlwaysInit = 0x0000020000000000,             // AlwaysInit; dump: every stock init property and parameter.
+	CPF_Unknown_0x40000000000 = 0x0000040000000000,  // Rocksteady addition, meaning unknown; on 41 properties, no flag test found.
+	CPF_EditorOnly = 0x0000080000000000,             // EditorOnly; ShouldSerializeValue 0x140F7AB40 and LoadConfig 0x140F41780.
+	CPF_NotForConsole = 0x0000100000000000,          // NotForConsole; ShouldSerializeValue 0x140F7AB40 tests it with CPF_EditorOnly.
+	CPF_ProtectedWrite = 0x0000400000000000,         // ProtectedWrite; dump: all 14 stock protectedwrite properties.
+	CPF_Unknown_0x800000000000 = 0x0000800000000000, // Meaning unknown, possibly PrivateWrite; only on BmGame properties.
+	CPF_Travel = 0x0000000000000000,                 // Not identified in this build.
+	CPF_EditFindable = 0x0000000000000000,           // Not identified in this build.
+	CPF_RepRetry = 0x0000000000000000,               // Not identified in this build.
+	CPF_PrivateWrite = 0x0000000000000000,           // Not identified in this build.
 };
 
 )cpp"
