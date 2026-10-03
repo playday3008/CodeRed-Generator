@@ -2699,11 +2699,28 @@ namespace ParameterGenerator
 				std::string lastParamName;
 				size_t lastParamOffset = 0;
 				size_t lastParamEnd = 0;
+				size_t emittedEnd = 0;
+				uint32_t unknownDataIndex = 0;
 
 				for (UnrealProperty& unrealProp : funcProperties)
 				{
 					if (unrealProp.IsValid())
 					{
+						if (unrealProp.IsParameter() && (static_cast<size_t>(unrealProp.Property->Offset) > emittedEnd) && ((static_cast<size_t>(unrealProp.Property->Offset) - emittedEnd) >= GConfig::GetGameAlignment()))
+						{
+							size_t missedOffset = (static_cast<size_t>(unrealProp.Property->Offset) - emittedEnd);
+							std::string padName = ("UnknownData" + Printer::Decimal(unknownDataIndex, EWidthTypes::Byte) + "[" + Printer::Hex(missedOffset) + "];");
+
+							parameterStream << "\t";
+							Printer::FillLeft(parameterStream, ' ', GConfig::GetFunctionSpacing());
+							parameterStream << "uint8_t" << " ";
+							Printer::FillLeft(parameterStream, ' ', GConfig::GetFunctionSpacing());
+							parameterStream << padName << "// " << Printer::Hex(emittedEnd, EWidthTypes::Size);
+							parameterStream << " (" << Printer::Hex(missedOffset, EWidthTypes::Size) << ") MISSED OFFSET\n";
+
+							unknownDataIndex++;
+						}
+
 						std::string propertyType = unrealProp.GetTypeForStruct();
 						std::string memberName = unrealProp.ValidName;
 
@@ -2724,6 +2741,7 @@ namespace ParameterGenerator
 							lastParamName = memberName;
 							lastParamOffset = unrealProp.Property->Offset;
 							lastParamEnd = (unrealProp.Property->Offset + (unrealProp.Property->ElementSize * unrealProp.Property->ArrayDim));
+							emittedEnd = (unrealProp.Property->Offset + (unrealProp.GetSize() * unrealProp.Property->ArrayDim));
 						}
 
 						if (unrealProp.Property->ArrayDim > 1)
@@ -2782,6 +2800,21 @@ namespace ParameterGenerator
 					{
 						parameterStream << "\t// UNKNOWN PROPERTY: " << unrealProp.Property->GetFullName() << "\n";
 					}
+				}
+
+				if ((lastParamEnd > emittedEnd) && ((lastParamEnd - emittedEnd) >= GConfig::GetGameAlignment()))
+				{
+					size_t missedOffset = (lastParamEnd - emittedEnd);
+					std::string padName = ("UnknownData" + Printer::Decimal(unknownDataIndex, EWidthTypes::Byte) + "[" + Printer::Hex(missedOffset) + "];");
+
+					parameterStream << "\t";
+					Printer::FillLeft(parameterStream, ' ', GConfig::GetFunctionSpacing());
+					parameterStream << "uint8_t" << " ";
+					Printer::FillLeft(parameterStream, ' ', GConfig::GetFunctionSpacing());
+					parameterStream << padName << "// " << Printer::Hex(emittedEnd, EWidthTypes::Size);
+					parameterStream << " (" << Printer::Hex(missedOffset, EWidthTypes::Size) << ") MISSED OFFSET\n";
+
+					unknownDataIndex++;
 				}
 
 				parameterStream << "};\n";
