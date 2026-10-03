@@ -70,8 +70,10 @@ uintptr_t Member::GetOffset(EMemberTypes type)
 		return offsetof(FNameEntry, HashNext);
 	case EMemberTypes::FNameEntry_Index:
 		return offsetof(FNameEntry, Index);
+#ifndef FNAMEENTRY_FLAGS_IN_INDEX
 	case EMemberTypes::FNameEntry_Flags:
 		return offsetof(FNameEntry, Flags);
+#endif
 	case EMemberTypes::FNameEntry_Name:
 		return offsetof(FNameEntry, Name);
 	case EMemberTypes::UObject_VfTable:
@@ -112,10 +114,22 @@ uintptr_t Member::GetOffset(EMemberTypes type)
 		return offsetof(UStruct, PropertySize);
 	case EMemberTypes::UStruct_Alignment:
 		return offsetof(UStruct, MinAlignment);
+#ifdef USTRUCT_HAS_SCRIPT
+	case EMemberTypes::UStruct_ScriptData:
+		return offsetof(UStruct, ScriptData);
+	case EMemberTypes::UStruct_ScriptSize:
+		return offsetof(UStruct, ScriptSize);
+	case EMemberTypes::UStruct_ScriptCapacity:
+		return offsetof(UStruct, ScriptCapacity);
+#endif
 	case EMemberTypes::UFunction_Flags:
 		return offsetof(UFunction, FunctionFlags);
 	case EMemberTypes::UFunction_Native:
 		return offsetof(UFunction, iNative);
+#ifdef UFUNCTION_HAS_FUNC
+	case EMemberTypes::UFunction_Func:
+		return offsetof(UFunction, Func);
+#endif
 	case EMemberTypes::UStructProperty_Struct:
 		return offsetof(UStructProperty, Struct);
 	case EMemberTypes::UObjectProperty_Class:
@@ -297,12 +311,16 @@ std::map<EClassTypes, std::vector<EMemberTypes>> Member::m_classMembers = {
 		EMemberTypes::UStruct_SuperField,
 		EMemberTypes::UStruct_Children,
 		EMemberTypes::UStruct_Size,
-		EMemberTypes::UStruct_Alignment
+		EMemberTypes::UStruct_Alignment,
+		EMemberTypes::UStruct_ScriptData,
+		EMemberTypes::UStruct_ScriptSize,
+		EMemberTypes::UStruct_ScriptCapacity
 	} },
 
 	{ EClassTypes::UFunction, {
 		EMemberTypes::UFunction_Flags,
-		EMemberTypes::UFunction_Native
+		EMemberTypes::UFunction_Native,
+		EMemberTypes::UFunction_Func
 	} },
 
 	// Property Objects
