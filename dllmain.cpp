@@ -3792,8 +3792,16 @@ namespace Generator
 #endif
 				UStruct::Register_Children();
 				UStruct::Register_PropertySize();
+#ifdef USTRUCT_HAS_SCRIPT
+				UStruct::Register_ScriptData();
+				UStruct::Register_ScriptSize();
+				UStruct::Register_ScriptCapacity();
+#endif
 				UFunction::Register_FunctionFlags();
 				UFunction::Register_iNative();
+#ifdef UFUNCTION_HAS_FUNC
+				UFunction::Register_Func();
+#endif
 				UStructProperty::Register_Struct();
 				UObjectProperty::Register_PropertyClass();
 				UClassProperty::Register_MetaClass();

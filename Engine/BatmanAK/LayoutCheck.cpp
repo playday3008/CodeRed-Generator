@@ -74,6 +74,13 @@ static_assert(offsetof(UStruct, PropertySize) == 120, "UStruct::PropertySize");
 static_assert(offsetof(UStruct, MinAlignment) == 122, "UStruct::MinAlignment");
 static_assert(offsetof(UFunction, FunctionFlags) == 164, "UFunction::FunctionFlags");
 static_assert(offsetof(UFunction, iNative) == 168, "UFunction::iNative");
+// Bytecode buffer: an 8 byte pointer then two 16 bit counts. EX_Jump adds [rax+6Ch]
+// (Steam 0x140F7B890); for ShouldShowTutorial both counts read 298, its bytecode length.
+static_assert(offsetof(UStruct, ScriptData) == 108, "UStruct::ScriptData");
+static_assert(offsetof(UStruct, ScriptSize) == 116, "UStruct::ScriptSize");
+static_assert(offsetof(UStruct, ScriptCapacity) == 118, "UStruct::ScriptCapacity");
+// Native thunk, called through [function+0BCh] by CallFunction (Steam 0x140F95AA0) and ProcessEvent.
+static_assert(offsetof(UFunction, Func) == 188, "UFunction::Func");
 static_assert(offsetof(UProperty, ArrayDim) == 92, "UProperty::ArrayDim");
 static_assert(offsetof(UProperty, PropertyFlags) == 96, "UProperty::PropertyFlags");
 static_assert(offsetof(UProperty, ElementSize) == 104, "UProperty::ElementSize");

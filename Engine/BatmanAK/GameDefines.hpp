@@ -1414,6 +1414,11 @@ struct FQWord
 // Uncommenting this will disabling using the "MinAlignment" field in UStruct, it is recommended you keep this commented.
 //#define SKIP_MIN_ALIGNMENT
 
+// UStruct declares its bytecode buffer and UFunction its native thunk, so the generator
+// registers both and emits them as named members instead of padding.
+#define USTRUCT_HAS_SCRIPT
+#define UFUNCTION_HAS_FUNC
+
 // Class Core.Object
 // (0x0000 - 0x0054)
 class UObject
@@ -1569,12 +1574,14 @@ public:
 class UStruct : public UField
 {
 public:
-	DECLARE_MEMBER(class UField*, SuperField, EMemberTypes::UStruct_SuperField) // 0x005C (0x08)
-	DECLARE_MEMBER(class UField*, Children, EMemberTypes::UStruct_Children)     // 0x0064 (0x08)
-	uint8_t UnknownData00[0x0C];                                                // 0x006C (0x0C)
-	DECLARE_MEMBER(uint16_t, PropertySize, EMemberTypes::UStruct_Size)          // 0x0078 (0x02)
-	DECLARE_MEMBER(uint16_t, MinAlignment, EMemberTypes::UStruct_Alignment)     // 0x007A (0x02)
-	uint8_t UnknownData01[0x28];                                                // 0x007C (0x28)
+	DECLARE_MEMBER(class UField*, SuperField, EMemberTypes::UStruct_SuperField)    // 0x005C (0x08)
+	DECLARE_MEMBER(class UField*, Children, EMemberTypes::UStruct_Children)        // 0x0064 (0x08)
+	DECLARE_MEMBER(uint8_t*, ScriptData, EMemberTypes::UStruct_ScriptData)         // 0x006C (0x08)
+	DECLARE_MEMBER(uint16_t, ScriptSize, EMemberTypes::UStruct_ScriptSize)         // 0x0074 (0x02)
+	DECLARE_MEMBER(uint16_t, ScriptCapacity, EMemberTypes::UStruct_ScriptCapacity) // 0x0076 (0x02)
+	DECLARE_MEMBER(uint16_t, PropertySize, EMemberTypes::UStruct_Size)             // 0x0078 (0x02)
+	DECLARE_MEMBER(uint16_t, MinAlignment, EMemberTypes::UStruct_Alignment)        // 0x007A (0x02)
+	uint8_t UnknownData00[0x28];                                                   // 0x007C (0x28)
 
 public:
 	static class UClass* StaticClass()
@@ -1597,7 +1604,8 @@ class UFunction : public UStruct
 public:
 	DECLARE_MEMBER(uint32_t, FunctionFlags, EMemberTypes::UFunction_Flags) // 0x00A4 (0x04)
 	DECLARE_MEMBER(uint16_t, iNative, EMemberTypes::UFunction_Native)      // 0x00A8 (0x02)
-	uint8_t UnknownData00[0x1A];                                           // 0x00AA (0x1A)
+	uint8_t UnknownData00[0x12];                                           // 0x00AA (0x12)
+	DECLARE_MEMBER(void*, Func, EMemberTypes::UFunction_Func)              // 0x00BC (0x08)
 
 public:
 	static class UClass* StaticClass()
