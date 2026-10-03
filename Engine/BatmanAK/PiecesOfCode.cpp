@@ -536,6 +536,11 @@ public:
 	FNameEntry() : Index(-1), HashNext(nullptr), Name{} {}
 	~FNameEntry() {}
 
+	// The game allocates each entry only as long as its text, so copying one would read the
+	// full 0x400 byte "Name" past the end of the allocation. Access entries through pointers.
+	FNameEntry(const FNameEntry&) = delete;
+	FNameEntry& operator=(const FNameEntry&) = delete;
+
 public:
 	int32_t GetFlags() const
 	{
@@ -618,6 +623,11 @@ public:
 public:
 	FNameEntry() : Index(-1), HashNext(nullptr), Name{} {}
 	~FNameEntry() {}
+
+	// The game allocates each entry only as long as its text, so copying one would read the
+	// full 0x400 byte "Name" past the end of the allocation. Access entries through pointers.
+	FNameEntry(const FNameEntry&) = delete;
+	FNameEntry& operator=(const FNameEntry&) = delete;
 
 public:
 	int32_t GetFlags() const
@@ -709,26 +719,24 @@ public:
 
 		for (int32_t entryId : foundNames)
 		{
-			if (Names()->at(entryId))
+			FNameEntry* entry = Names()->at(entryId);
+
+			if (entry && entry->IsWide() && (wcscmp(entry->GetWideName(), nameToFind) == 0))
 			{
-				if (wcscmp(Names()->at(entryId)->Name, nameToFind) == 0)
-				{
-					FNameEntryId = entryId;
-					return;
-				}
+				FNameEntryId = entryId;
+				return;
 			}
 		}
 
 		for (int32_t i = 0; i < Names()->size(); i++)
 		{
-			if (Names()->at(i))
+			FNameEntry* entry = Names()->at(i);
+
+			if (entry && entry->IsWide() && (wcscmp(entry->GetWideName(), nameToFind) == 0))
 			{
-				if (wcscmp(Names()->at(i)->Name, nameToFind) == 0)
-				{
-					foundNames.push_back(i);
-					FNameEntryId = i;
-					return;
-				}
+				foundNames.push_back(i);
+				FNameEntryId = i;
+				return;
 			}
 		}
 	}
@@ -748,14 +756,16 @@ public:
 		return FNameEntryId;
 	}
 
-	const FNameEntry GetDisplayNameEntry() const
+	const FNameEntry& GetDisplayNameEntry() const
 	{
-		if (IsValid())
+		static const FNameEntry emptyEntry{};
+
+		if (IsValid() && Names()->at(FNameEntryId))
 		{
 			return *Names()->at(FNameEntryId);
 		}
 
-		return FNameEntry();
+		return emptyEntry;
 	}
 
 	FNameEntry* GetEntry()
@@ -790,7 +800,7 @@ public:
 
 	bool IsValid() const
 	{
-		if ((FNameEntryId < 0 || FNameEntryId > Names()->size()))
+		if ((FNameEntryId < 0 || FNameEntryId >= Names()->size()))
 		{
 			return false;
 		}
@@ -840,25 +850,24 @@ public:
 
 		for (int32_t entryId : nameCache)
 		{
-			if (Names()->at(entryId))
+			FNameEntry* entry = Names()->at(entryId);
+
+			if (entry && !entry->IsWide() && (strcmp(entry->GetAnsiName(), nameToFind) == 0))
 			{
-				if (strcmp(Names()->at(entryId)->Name, nameToFind) == 0)
-				{
-					FNameEntryId = entryId;
-					return;
-				}
+				FNameEntryId = entryId;
+				return;
 			}
 		}
 
 		for (int32_t i = 0; i < Names()->size(); i++)
 		{
-			if (Names()->at(i))
+			FNameEntry* entry = Names()->at(i);
+
+			if (entry && !entry->IsWide() && (strcmp(entry->GetAnsiName(), nameToFind) == 0))
 			{
-				if (strcmp(Names()->at(i)->Name, nameToFind) == 0)
-				{
-					nameCache.push_back(i);
-					FNameEntryId = i;
-				}
+				nameCache.push_back(i);
+				FNameEntryId = i;
+				return;
 			}
 		}
 	}
@@ -879,14 +888,16 @@ public:
 		return FNameEntryId;
 	}
 
-	const FNameEntry GetDisplayNameEntry() const
+	const FNameEntry& GetDisplayNameEntry() const
 	{
-		if (IsValid())
+		static const FNameEntry emptyEntry{};
+
+		if (IsValid() && Names()->at(FNameEntryId))
 		{
 			return *Names()->at(FNameEntryId);
 		}
 
-		return FNameEntry();
+		return emptyEntry;
 	}
 
 	FNameEntry* GetEntry()
@@ -921,7 +932,7 @@ public:
 
 	bool IsValid() const
 	{
-		if ((FNameEntryId < 0 || FNameEntryId > Names()->size()))
+		if ((FNameEntryId < 0 || FNameEntryId >= Names()->size()))
 		{
 			return false;
 		}
