@@ -2678,8 +2678,9 @@ namespace ParameterGenerator
 				else { propertyStream << "exec"; }
 				// clang-format on
 
+				const std::string structName = (classNameCPP + "_" + propertyStream.str() + functionObj.ValidName + "_Params");
 				parameterStream << "\n"
-								<< "struct " << classNameCPP << "_" << propertyStream.str() << functionObj.ValidName << "_Params\n"
+								<< "struct " << structName << "\n"
 								<< "{\n";
 				Printer::Empty(propertyStream);
 
@@ -2695,22 +2696,34 @@ namespace ParameterGenerator
 
 				std::sort(funcProperties.begin(), funcProperties.end(), Utils::SortProperty);
 				std::map<std::string, uint32_t> propertyNameMap;
+				std::string lastParamName;
+				size_t lastParamOffset = 0;
+				size_t lastParamEnd = 0;
 
 				for (UnrealProperty& unrealProp : funcProperties)
 				{
 					if (unrealProp.IsValid())
 					{
 						std::string propertyType = unrealProp.GetTypeForStruct();
+						std::string memberName = unrealProp.ValidName;
 
 						if (propertyNameMap.count(unrealProp.ValidName) == 0)
 						{
 							propertyNameMap[unrealProp.ValidName] = 1;
-							propertyStream << unrealProp.ValidName;
 						}
 						else
 						{
-							propertyStream << unrealProp.ValidName << Printer::Decimal(propertyNameMap.at(unrealProp.ValidName), EWidthTypes::Byte);
+							memberName += Printer::Decimal(propertyNameMap.at(unrealProp.ValidName), EWidthTypes::Byte);
 							propertyNameMap[unrealProp.ValidName]++;
+						}
+
+						propertyStream << memberName;
+
+						if (unrealProp.IsParameter())
+						{
+							lastParamName = memberName;
+							lastParamOffset = unrealProp.Property->Offset;
+							lastParamEnd = (unrealProp.Property->Offset + (unrealProp.Property->ElementSize * unrealProp.Property->ArrayDim));
 						}
 
 						if (unrealProp.Property->ArrayDim > 1)
@@ -2724,9 +2737,11 @@ namespace ParameterGenerator
 							propertyStream << " : 1";
 						}
 #else
+						// In a parameter frame every bool is its own 4 byte property with mask 1. A bitfield
+						// would pack consecutive bools into one storage unit and shift every later parameter.
 						if (unrealProp.Type == EPropertyTypes::Bool)
 						{
-							propertyStream << " : 1";
+							propertyType = "uint32_t";
 						}
 #endif
 
@@ -2769,7 +2784,17 @@ namespace ParameterGenerator
 					}
 				}
 
-				parameterStream << "};\n\n";
+				parameterStream << "};\n";
+
+				// Script locals follow every parameter and are emitted only as comments, so the frame
+				// is checked through its last parameter rather than the function's PropertySize.
+				if (!lastParamName.empty())
+				{
+					parameterStream << "static_assert(offsetof(" << structName << ", " << lastParamName << ") == " << Printer::Hex(lastParamOffset, EWidthTypes::Size) << ");\n";
+					parameterStream << "static_assert(sizeof(" << structName << ") >= " << Printer::Hex(lastParamEnd, EWidthTypes::Size) << ");\n";
+				}
+
+				parameterStream << "\n";
 			}
 		}
 
@@ -3484,6 +3509,7 @@ namespace Generator
 		definesFile << "#pragma once\n";
 		definesFile << "\n";
 		definesFile << "#include <cctype>\n";
+		definesFile << "#include <cstddef>\n";
 		definesFile << "#include <cstdlib>\n";
 		definesFile << "\n";
 		definesFile << "#include <algorithm>\n";
